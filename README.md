@@ -516,3 +516,6 @@ hse_vibehack/
 - `backend/app/presentation/api/v1/` — HTTP endpoints.
 - `frontend/src/entities/article/api/article-api.ts` — клиентский слой запросов.
 - `agents_system/graph_mas.py` — граф мультиагентной обработки.
+
+## Демонстрация работы системы
+CLI - https://drive.google.com/file/d/15UfV33nzn90dD-_NxCi10xk7A5us9KF7/view?usp=drive_link
