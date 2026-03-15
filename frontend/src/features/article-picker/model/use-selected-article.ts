@@ -12,15 +12,23 @@ export const useSelectedArticle = create<SelectedArticleState>()(
   persist(
     (set) => ({
       selectedArticleId: '',
-      searchTerm: 'llm agents',
+      searchTerm: '',
       setSelectedArticleId: (selectedArticleId) => set({ selectedArticleId }),
       setSearchTerm: (searchTerm) => set({ searchTerm }),
     }),
     {
       name: 'science-helpy-page-state',
+      version: 2,
+      migrate: (persistedState) => {
+        const state = persistedState as Partial<SelectedArticleState> | undefined
+
+        return {
+          selectedArticleId: state?.selectedArticleId ?? '',
+          searchTerm: '',
+        }
+      },
       partialize: (state) => ({
         selectedArticleId: state.selectedArticleId,
-        searchTerm: state.searchTerm,
       }),
     },
   ),

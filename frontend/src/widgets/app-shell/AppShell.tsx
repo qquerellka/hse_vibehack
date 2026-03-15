@@ -19,10 +19,9 @@ export function AppShell() {
         </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[360px,minmax(0,1fr),340px]">
+      <section className="grid gap-6 xl:grid-cols-[320px,minmax(0,1fr)]">
         <ArticleSearch />
         <ArticleHub />
-        {/* <ActivityOverview /> */}
       </section>
     </main>
   )

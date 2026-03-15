@@ -1,6 +1,7 @@
 import { startTransition, useDeferredValue, useState } from 'react'
 import { LoaderCircle, Search } from 'lucide-react'
 import { isAxiosError } from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
 import { useArticles } from '../../../entities/article/api/article-api'
 import { useSelectedArticle } from '../../article-picker/model/use-selected-article'
 import { Badge } from '../../../shared/ui/badge'
@@ -9,12 +10,19 @@ import { Button } from '../../../shared/ui/button'
 import { ProgressStatus } from '../../../shared/ui/progress-status'
 
 export function ArticleSearch() {
+  const queryClient = useQueryClient()
   const { selectedArticleId, setSelectedArticleId, searchTerm, setSearchTerm } = useSelectedArticle()
   const [draft, setDraft] = useState(searchTerm)
   const deferredSearch = useDeferredValue(searchTerm)
   const { data: articles = [], isLoading, isFetching, isError, error } = useArticles(deferredSearch)
   const isSearchStarted = Boolean(searchTerm.trim())
   const isSearching = isLoading || isFetching
+  const stopSearch = () => {
+    void queryClient.cancelQueries({ queryKey: ['articles'] })
+    startTransition(() => {
+      setSearchTerm('')
+    })
+  }
 
   return (
     <Card className="space-y-4">
@@ -26,25 +34,32 @@ export function ArticleSearch() {
         <Badge>{isSearching ? 'Идёт поиск' : `Найдено: ${articles.length}`}</Badge>
       </div>
 
-      <label className="flex items-center gap-3 rounded-full border border-line bg-paper px-4 py-3">
-        <Search className="h-4 w-4 text-muted" />
+      <label className="flex items-center gap-3 px-4 py-3 border rounded-full border-line bg-paper">
+        <Search className="w-4 h-4 text-muted" />
         <input
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           placeholder="Например: llm agents, retrieval, qwen..."
-          className="w-full border-0 bg-transparent text-sm outline-none placeholder:text-muted"
+          className="w-full text-sm bg-transparent border-0 outline-none placeholder:text-muted"
         />
         <Button
           type="button"
-          disabled={!draft.trim() || isSearching}
-          onClick={() => {
-            startTransition(() => {
-              setSearchTerm(draft.trim())
-            })
-          }}
+          disabled={isSearching ? false : !draft.trim()}
+          onClick={isSearching
+            ? stopSearch
+            : () => {
+                startTransition(() => {
+                  setSearchTerm(draft.trim())
+                })
+              }}
           className="px-3 py-1.5 text-xs"
         >
-          {isSearching ? <LoaderCircle className="h-4 w-4 animate-spin" /> : 'Найти'}
+          {isSearching ? (
+            <>
+              <LoaderCircle className="w-4 h-4 animate-spin" />
+              Стоп
+            </>
+          ) : 'Найти'}
         </Button>
       </label>
 
@@ -102,7 +117,7 @@ export function ArticleSearch() {
                 : 'border-line bg-fog/70 text-muted'
             }`}>
               <p className="font-mono uppercase tracking-[0.18em]">Авторы</p>
-              <p className="mt-2 line-clamp-2 normal-case tracking-normal">{article.authors.join(', ')}</p>
+              <p className="mt-2 tracking-normal normal-case line-clamp-2">{article.authors.join(', ')}</p>
             </div>
 
             <div className="mt-3">
@@ -114,7 +129,7 @@ export function ArticleSearch() {
               </p>
             </div>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 mt-3">
               {article.tags.map((tag) => (
                 <Badge key={tag} className={selectedArticleId === article.id ? 'border-white/20 bg-white/10 text-paper/80' : ''}>
                   {tag}

@@ -123,7 +123,7 @@ function mapArticleSummary(article: BackendArticle): ArticleSummary {
 export function useArticles(query: string) {
   return useQuery({
     queryKey: ['articles', query],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       if (!query.trim()) {
         return []
       }
@@ -131,6 +131,8 @@ export function useArticles(query: string) {
       const { data } = await http.post<BackendArticle[]>('/articles/search', {
         query,
         max_results: 10,
+      }, {
+        signal,
       })
 
       return data.map(mapArticleSummary)
