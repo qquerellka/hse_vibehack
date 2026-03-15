@@ -91,21 +91,39 @@ class GraphMAS:
         return graph.compile(checkpointer=self.memory)
        
     
-    def _router(self, state: MainState) -> str:
-        last_message = state["messages"][-1]
-        content = last_message.content.lower()
+    @staticmethod
+    def _message_to_text(message: object) -> str:
+        content = getattr(message, "content", "")
+        if isinstance(content, str):
+            return content.lower()
+        if isinstance(content, list):
+            chunks: list[str] = []
+            for item in content:
+                if isinstance(item, dict):
+                    text = item.get("text")
+                    if isinstance(text, str):
+                        chunks.append(text)
+                elif isinstance(item, str):
+                    chunks.append(item)
+            return "\n".join(chunks).lower()
+        return str(content).lower()
 
-        if "[eval]" in content:
-            destination = "eval"
-        elif "[describe]" in content:
-            destination = "describe"
-        elif "[write]" in content:
-            destination = "writer"
-        # Новый маршрут: если пользователь явно просит тест
-        elif "[quiz]" in content or "сделай тест" in content or "тест по статье" in content or "quiz" in content:
-            destination = "quiz"
-        elif "[end]" in content:
+    def _router(self, state: MainState) -> str:
+        # Не полагаемся только на последнее сообщение: оно может быть ToolMessage
+        # с парсингом статьи без управляющих тегов.
+        message_texts = [self._message_to_text(msg) for msg in reversed(state["messages"])]
+        merged = "\n".join(message_texts)
+
+        if "[end]" in merged:
             destination = "end"
+        elif "[quiz]" in merged or "сделай тест" in merged or "тест по статье" in merged or "quiz" in merged:
+            destination = "quiz"
+        elif "[write]" in merged:
+            destination = "writer"
+        elif "[describe]" in merged:
+            destination = "describe"
+        elif "[eval]" in merged:
+            destination = "eval"
         else:
             destination = "end"
 
@@ -125,7 +143,7 @@ class GraphMAS:
         return {
             **state,
             "messages": [final_message],
-            "written_review": final_message.content,
+            "written_review": getattr(final_message, "content", str(final_message)),
         }
         
 

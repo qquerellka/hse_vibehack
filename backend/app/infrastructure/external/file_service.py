@@ -33,6 +33,18 @@ class FileService:
         self.downloads_dir = Path(downloads_dir)
         self.extracted_images_dir = Path(extracted_images_dir)
 
+    @staticmethod
+    def _normalize_tool_path(path_value: str) -> str:
+        return (
+            path_value.replace("\u2018", "'")
+            .replace("\u2019", "'")
+            .replace("\u201c", '"')
+            .replace("\u201d", '"')
+            .strip()
+            .strip("'\"`")
+            .strip()
+        )
+
     async def download_pdf(self, url: str, arxiv_id: str) -> Optional[str]:
         """Скачать PDF статьи через agents_system."""
 
@@ -69,7 +81,7 @@ class FileService:
         """Парсинг TeX через agents_system."""
 
         def _parse() -> Optional[str]:
-            raw = parse_tex_file.invoke({"tex_path": file_path})
+            raw = parse_tex_file.invoke({"tex_path": self._normalize_tool_path(file_path)})
             if not raw or raw.startswith("Ошибка:"):
                 return None
             return raw

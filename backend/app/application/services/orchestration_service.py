@@ -54,6 +54,22 @@ class OrchestrationService:
         return self._graph_mas
 
     @staticmethod
+    def _normalize_tool_path(path_value: Optional[str]) -> Optional[str]:
+        if not path_value:
+            return path_value
+
+        normalized = (
+            path_value.replace("\u2018", "'")
+            .replace("\u2019", "'")
+            .replace("\u201c", '"')
+            .replace("\u201d", '"')
+            .strip()
+            .strip("'\"`")
+            .strip()
+        )
+        return normalized or None
+
+    @staticmethod
     def _parse_search_tool_output(raw: str) -> List[ArticleSearchResultDTO]:
         results: List[ArticleSearchResultDTO] = []
         pattern = re.compile(
@@ -175,7 +191,7 @@ class OrchestrationService:
                 try:
                     tex_payload = json.loads(tex_messages[-1].content)
                     if tex_payload.get("status") == "success":
-                        tex_directory = tex_payload.get("directory")
+                        tex_directory = self._normalize_tool_path(tex_payload.get("directory"))
                 except json.JSONDecodeError:
                     tex_directory = None
 
@@ -209,7 +225,7 @@ class OrchestrationService:
             if article.local_tex_path:
                 from agent_tools.tools import parse_tex_file  # type: ignore
 
-                parsed = parse_tex_file.invoke({"tex_path": article.local_tex_path})
+                parsed = parse_tex_file.invoke({"tex_path": self._normalize_tool_path(article.local_tex_path)})
                 if parsed and not parsed.startswith("Ошибка:"):
                     return parsed
             if article.local_pdf_path:
@@ -230,7 +246,7 @@ class OrchestrationService:
                 if article.local_tex_path:
                     from agent_tools.tools import parse_tex_file  # type: ignore
 
-                    paper_content = parse_tex_file.invoke({"tex_path": article.local_tex_path})
+                    paper_content = parse_tex_file.invoke({"tex_path": self._normalize_tool_path(article.local_tex_path)})
                 elif article.local_pdf_path:
                     from agent_tools.tools import parse_pdf_file  # type: ignore
 
@@ -249,7 +265,7 @@ class OrchestrationService:
 
             initial_state = {
                 "messages": [HumanMessage(content="Оцени статью и покажи итоговую оценку. [EVAL]")],
-                "selected_paper_path": article.local_tex_path or article.local_pdf_path,
+                "selected_paper_path": self._normalize_tool_path(article.local_tex_path or article.local_pdf_path),
                 "paper_content": paper_content,
                 "extracted_images_path": extracted_images_path,
             }
@@ -277,7 +293,7 @@ class OrchestrationService:
             )
             return dto, {
                 "parsed_content": result.get("paper_content") or paper_content,
-                "selected_paper_path": result.get("selected_paper_path"),
+                "selected_paper_path": self._normalize_tool_path(result.get("selected_paper_path")),
                 "extracted_images_path": result.get("extracted_images_path"),
             }
 
@@ -295,7 +311,7 @@ class OrchestrationService:
                 if article.local_tex_path:
                     from agent_tools.tools import parse_tex_file  # type: ignore
 
-                    paper_content = parse_tex_file.invoke({"tex_path": article.local_tex_path})
+                    paper_content = parse_tex_file.invoke({"tex_path": self._normalize_tool_path(article.local_tex_path)})
                 elif article.local_pdf_path:
                     from agent_tools.tools import parse_pdf_file  # type: ignore
 
@@ -314,7 +330,7 @@ class OrchestrationService:
 
             initial_state = {
                 "messages": [HumanMessage(content="Напиши подробный обзор статьи. [WRITE]")],
-                "selected_paper_path": article.local_tex_path or article.local_pdf_path,
+                "selected_paper_path": self._normalize_tool_path(article.local_tex_path or article.local_pdf_path),
                 "paper_content": paper_content,
                 "extracted_images_path": extracted_images_path,
             }
@@ -341,7 +357,7 @@ class OrchestrationService:
             )
             return dto, {
                 "parsed_content": result.get("paper_content") or paper_content,
-                "selected_paper_path": result.get("selected_paper_path"),
+                "selected_paper_path": self._normalize_tool_path(result.get("selected_paper_path")),
                 "extracted_images_path": result.get("extracted_images_path"),
             }
 

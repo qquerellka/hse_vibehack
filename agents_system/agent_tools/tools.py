@@ -14,6 +14,19 @@ from pathlib import Path
 DOWNLOAD_DIR = Path("./downloads")
 DOWNLOAD_DIR.mkdir(exist_ok=True)
 
+
+def _normalize_input_path(raw_path: str) -> Path:
+    normalized = (
+        raw_path.replace("\u2018", "'")
+        .replace("\u2019", "'")
+        .replace("\u201c", '"')
+        .replace("\u201d", '"')
+        .strip()
+        .strip("'\"`")
+        .strip()
+    )
+    return Path(normalized)
+
 @tool("search_arxiv_papers")
 def search_arxiv_papers(
     query: str, 
@@ -353,7 +366,7 @@ def parse_tex_file(tex_path: str) -> str:
     Returns:
         Extracted text content from the main .tex file.
     """
-    p = Path(tex_path)
+    p = _normalize_input_path(tex_path)
 
     try:
         if p.is_file():
