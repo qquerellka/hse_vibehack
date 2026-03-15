@@ -51,7 +51,14 @@ class EvaluateArticleUseCase:
         if not article:
             raise NotFoundError(f"Article with ID {article_id} not found")
         
-        # Получаем содержимое статьи
+        if not article.parsed_content:
+            if article.local_tex_path:
+                article.parsed_content = await self.file_service.parse_tex(article.local_tex_path)
+            elif article.local_pdf_path:
+                article.parsed_content = await self.file_service.parse_pdf(article.local_pdf_path)
+            if article.parsed_content:
+                await self.article_repository.update(article)
+
         article_content = article.parsed_content or article.abstract
         
         # Извлекаем изображения
@@ -61,12 +68,8 @@ class EvaluateArticleUseCase:
         elif article.local_tex_path:
             image_paths = await self.file_service.extract_images_from_tex(article.local_tex_path)
         
-        # ⚠️ МОК: Описываем изображения через AgentService
-        # TODO: Заменить на реальный DescribeAgent
         image_descriptions = await self.agent_service.describe_images(image_paths)
         
-        # ⚠️ МОК: Оцениваем статью через AgentService
-        # TODO: Заменить на реальный EvalAgent
         evaluation_dto = await self.agent_service.evaluate_article(
             article_id,
             article_content,
@@ -90,4 +93,3 @@ class EvaluateArticleUseCase:
         
         saved_evaluation = await self.evaluation_repository.create(evaluation)
         return evaluation_to_dto(saved_evaluation)
-

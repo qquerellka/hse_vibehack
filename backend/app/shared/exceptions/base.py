@@ -24,3 +24,7 @@ class RepositoryError(DomainException):
     """Исключение репозитория."""
     pass
 
+
+class ServiceUnavailableError(DomainException):
+    """Исключение недоступности внешнего сервиса."""
+    pass

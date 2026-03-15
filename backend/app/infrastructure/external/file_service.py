@@ -1,148 +1,130 @@
-"""
-МОК сервиса для работы с файлами (скачивание, парсинг).
-
-⚠️ ВНИМАНИЕ: ЭТО МОК (ЗАГЛУШКА) ⚠️
-
-Реальная реализация скачивания и парсинга файлов будет подключена другим разработчиком.
-Этот класс возвращает тестовые данные для разработки API endpoints.
-
-Для подключения реальной реализации:
-1. Замените методы download_pdf(), download_tex() на реальное скачивание файлов
-2. Замените методы parse_tex(), parse_pdf() на реальный парсинг
-3. Замените методы extract_images_from_pdf(), extract_images_from_tex() на реальное извлечение изображений
-4. Обновите dependency injection в app/presentation/dependencies.py
-"""
+"""Сервис для скачивания и парсинга файлов статей."""
+import asyncio
+import io
+import tarfile
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
+
+import fitz
+import pymupdf4llm
+import requests
+
+from app.infrastructure.config.settings import settings
 
 
 class FileService:
-    """
-    МОК сервиса для скачивания и работы с файлами статей.
-    
-    ⚠️ МОК-РЕАЛИЗАЦИЯ ⚠️
-    Реальная реализация будет подключена другим разработчиком.
-    """
-    
-    def __init__(self, downloads_dir: str = "./downloads"):
-        """
-        Инициализация сервиса.
-        
-        Args:
-            downloads_dir: Директория для сохранения файлов
-        """
+    """Сервис для скачивания и работы с файлами статей."""
+
+    def __init__(
+        self,
+        downloads_dir: str = settings.DOWNLOADS_DIR,
+        extracted_images_dir: str = settings.EXTRACTED_IMAGES_DIR,
+    ) -> None:
         self.downloads_dir = Path(downloads_dir)
         self.downloads_dir.mkdir(parents=True, exist_ok=True)
-    
+        self.extracted_images_dir = Path(extracted_images_dir)
+        self.extracted_images_dir.mkdir(parents=True, exist_ok=True)
+
     async def download_pdf(self, url: str, arxiv_id: str) -> Optional[str]:
-        """
-        МОК: Скачать PDF файл статьи.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            url: URL PDF файла
-            arxiv_id: arXiv ID статьи
-        
-        Returns:
-            Путь к сохраненному файлу (тестовый путь)
-        
-        TODO: Заменить на реальное скачивание PDF файла
-        """
-        # МОК: Возвращаем тестовый путь
+        """Скачать PDF файл статьи."""
         file_path = self.downloads_dir / f"{arxiv_id}.pdf"
-        return str(file_path)
-    
+
+        def _download() -> str:
+            response = requests.get(url, timeout=60)
+            response.raise_for_status()
+            file_path.write_bytes(response.content)
+            return str(file_path.absolute())
+
+        return await asyncio.to_thread(_download)
+
     async def download_tex(self, url: str, arxiv_id: str) -> Optional[str]:
-        """
-        МОК: Скачать TeX файл статьи.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            url: URL TeX файла
-            arxiv_id: arXiv ID статьи
-        
-        Returns:
-            Путь к сохраненному файлу (тестовый путь)
-        
-        TODO: Заменить на реальное скачивание TeX файла
-        """
-        # МОК: Возвращаем тестовый путь
-        file_path = self.downloads_dir / f"{arxiv_id}.tex"
-        return str(file_path)
-    
+        """Скачать и распаковать TeX-исходники статьи."""
+        target_dir = self.downloads_dir / f"{arxiv_id}_tex"
+        target_dir.mkdir(parents=True, exist_ok=True)
+
+        def _download() -> Optional[str]:
+            response = requests.get(url, timeout=60)
+            response.raise_for_status()
+            try:
+                with tarfile.open(fileobj=io.BytesIO(response.content), mode="r:*") as archive:
+                    archive.extractall(path=target_dir)
+            except tarfile.ReadError:
+                return None
+            return str(target_dir.absolute())
+
+        return await asyncio.to_thread(_download)
+
     async def parse_tex(self, file_path: str) -> Optional[str]:
-        """
-        МОК: Парсинг TeX файла и извлечение текста.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            file_path: Путь к TeX файлу
-        
-        Returns:
-            Извлеченный текст (тестовый текст)
-        
-        TODO: Заменить на реальный парсинг TeX файла
-        """
-        # МОК: Возвращаем тестовый текст
-        return f"[MOCK] Parsed TeX content from {file_path}. This is a placeholder that will be replaced with real TeX parsing."
-    
+        """Парсинг TeX файлов и извлечение текста."""
+        def _parse() -> Optional[str]:
+            path = Path(file_path)
+            tex_files = [path] if path.is_file() and path.suffix.lower() == ".tex" else list(path.glob("**/*.tex"))
+            if not tex_files:
+                return None
+
+            main_tex = None
+            for tex_file in tex_files:
+                preview = tex_file.read_text(encoding="utf-8", errors="ignore")[:2000].lower()
+                if "\\documentclass" in preview or "\\begin{document}" in preview:
+                    main_tex = tex_file
+                    break
+
+            chunks: List[str] = []
+            for tex_file in ([main_tex] if main_tex else tex_files):
+                if tex_file is None:
+                    continue
+                content = tex_file.read_text(encoding="utf-8", errors="ignore")
+                if "\\begin{document}" in content:
+                    content = content[content.find("\\begin{document}"):]
+                chunks.append(f"\n\n%%% FILE: {tex_file.name} %%%\n{content}")
+
+            parsed = "\n".join(chunks).strip()
+            return parsed or None
+
+        return await asyncio.to_thread(_parse)
+
     async def parse_pdf(self, file_path: str) -> Optional[str]:
-        """
-        МОК: Парсинг PDF файла и извлечение текста.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            file_path: Путь к PDF файлу
-        
-        Returns:
-            Извлеченный текст (тестовый текст)
-        
-        TODO: Заменить на реальный парсинг PDF файла
-        """
-        # МОК: Возвращаем тестовый текст
-        return f"[MOCK] Parsed PDF content from {file_path}. This is a placeholder that will be replaced with real PDF parsing."
-    
+        """Парсинг PDF файла и извлечение текста."""
+        return await asyncio.to_thread(pymupdf4llm.to_markdown, file_path)
+
     async def extract_images_from_pdf(self, file_path: str) -> List[str]:
-        """
-        МОК: Извлечь изображения из PDF файла.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            file_path: Путь к PDF файлу
-        
-        Returns:
-            Список путей к извлеченным изображениям (тестовые пути)
-        
-        TODO: Заменить на реальное извлечение изображений из PDF
-        """
-        # МОК: Возвращаем тестовые пути
-        images_dir = self.downloads_dir / "images"
-        return [
-            str(images_dir / f"image_{i}.png")
-            for i in range(3)  # Возвращаем 3 тестовых изображения
-        ]
-    
+        """Извлечь изображения из PDF файла."""
+        def _extract() -> List[str]:
+            source = Path(file_path)
+            target_dir = self.extracted_images_dir / source.stem
+            target_dir.mkdir(parents=True, exist_ok=True)
+
+            saved_images: List[str] = []
+            image_counter = 0
+            doc = fitz.open(str(source))
+            try:
+                for page_num in range(len(doc)):
+                    for image_info in doc[page_num].get_images(full=True):
+                        xref = image_info[0]
+                        try:
+                            pix = fitz.Pixmap(doc, xref)
+                            if pix.n - pix.alpha > 3:
+                                pix = fitz.Pixmap(fitz.csRGB, pix)
+                            image_counter += 1
+                            image_path = target_dir / f"{source.stem}_page{page_num + 1}_img{image_counter}.png"
+                            pix.save(str(image_path))
+                            saved_images.append(str(image_path.absolute()))
+                        except Exception:
+                            continue
+            finally:
+                doc.close()
+            return saved_images
+
+        return await asyncio.to_thread(_extract)
+
     async def extract_images_from_tex(self, file_path: str) -> List[str]:
-        """
-        МОК: Извлечь пути к изображениям из TeX файла.
-        
-        ⚠️ ВНИМАНИЕ: Это заглушка! Реальная реализация будет подключена другим разработчиком.
-        
-        Args:
-            file_path: Путь к TeX файлу
-        
-        Returns:
-            Список путей к изображениям (тестовые пути)
-        
-        TODO: Заменить на реальное извлечение путей к изображениям из TeX
-        """
-        # МОК: Возвращаем тестовые пути
-        return [
-            f"figures/figure_{i}.png"
-            for i in range(2)  # Возвращаем 2 тестовых пути
-        ]
+        """Найти изображения в директории с TeX-исходниками."""
+        def _extract() -> List[str]:
+            path = Path(file_path)
+            root = path if path.is_dir() else path.parent
+            images: List[str] = []
+            for ext in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".pdf"):
+                images.extend(str(candidate.absolute()) for candidate in root.glob(f"**/*{ext}"))
+            return images
+
+        return await asyncio.to_thread(_extract)
