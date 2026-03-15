@@ -1,12 +1,11 @@
 export type ArticleSummary = {
   id: string
+  arxivId: string
   title: string
   authors: string[]
   published: string
   abstract: string
   tags: string[]
-  readingMinutes: number
-  difficulty: 'Intro' | 'Intermediate' | 'Advanced'
 }
 
 export type Evaluation = {
@@ -33,12 +32,9 @@ export type QuizQuestion = {
 }
 
 export type ArticleDetail = ArticleSummary & {
-  journalFit: string
-  whyItMatters: string
-  keyIdeas: string[]
-  status: 'fresh' | 'reviewed' | 'mastered'
-  evaluation: Evaluation
-  review: ReviewSection[]
-  quiz: QuizQuestion[]
-  recommendations: ArticleSummary[]
+  pdfUrl?: string
+  texUrl?: string
+  localPdfPath?: string
+  localTexPath?: string
+  parsedContent?: string
 }

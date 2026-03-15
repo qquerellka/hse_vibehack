@@ -1,81 +1,71 @@
-import { useAnalytics } from '../../entities/analytics/api/analytics-api'
-import { useHistory } from '../../entities/session/api/session-api'
+import { useQuery } from '@tanstack/react-query'
+import { Activity, Database, HeartPulse } from 'lucide-react'
+import { useSelectedArticle } from '../../features/article-picker/model/use-selected-article'
+import { http } from '../../shared/api/http'
 import { Badge } from '../../shared/ui/badge'
 import { Card } from '../../shared/ui/card'
-import { Meter } from '../../shared/ui/meter'
-
-function formatStatus(status: string) {
-  if (status === 'mastered') return 'изучено'
-  if (status === 'reviewed') return 'разобрано'
-  if (status === 'reading') return 'в процессе'
-  if (status === 'queued') return 'в очереди'
-  return status
-}
-
-function activityTone(count: number) {
-  if (count === 0) return 'bg-white'
-  if (count === 1) return 'bg-[#dbd4c7]'
-  if (count === 2) return 'bg-[#b7ae9d]'
-  if (count === 3) return 'bg-[#736b60]'
-  return 'bg-ink'
-}
 
 export function ActivityOverview() {
-  const { data: analytics } = useAnalytics()
-  const { data: history = [] } = useHistory()
+  const { selectedArticleId } = useSelectedArticle()
+  const { data: health, isLoading, isError } = useQuery({
+    queryKey: ['api-health'],
+    queryFn: async () => {
+      const { data } = await http.get<{ status: string; message: string }>('/health')
+      return data
+    },
+  })
 
-  if (!analytics) {
-    return <Card>Загружаю аналитику...</Card>
+  if (isLoading) {
+    return <Card>Проверяю доступность API...</Card>
+  }
+
+  if (isError || !health) {
+    return <Card>API недоступен. Проверьте запуск backend на `localhost:8000`.</Card>
   }
 
   return (
     <div className="space-y-5">
       <Card>
-        <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Аналитика обучения</p>
-        <h2 className="mt-2 text-2xl text-ink">Память прогресса</h2>
+        <div className="flex items-center gap-2">
+          <HeartPulse className="h-4 w-4 text-muted" />
+          <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Статус backend</p>
+        </div>
+        <h2 className="mt-2 text-2xl text-ink">Подключение активно</h2>
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-1">
-          <Metric label="Статей прочитано" value={analytics.totalRead.toString()} />
-          <Metric label="Разобрано глубоко" value={analytics.totalReviewed.toString()} />
-          <Metric label="Точность квизов" value={`${analytics.quizAccuracy}%`} />
-          <Metric label="Серия" value={`${analytics.streak} дней`} />
+          <Metric label="Health" value={health.status} />
+          <Metric label="Message" value={health.message} />
+          <Metric label="Base URL" value="/api/v1" />
+          <Metric label="Текущий arXiv ID" value={selectedArticleId || 'не выбран'} />
         </div>
       </Card>
 
       <Card>
         <div className="flex items-end justify-between gap-3">
           <div>
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Календарь активности</p>
-            <h2 className="mt-2 text-2xl text-ink">Ритм чтения</h2>
-          </div>
-          <Badge>стиль GitHub</Badge>
-        </div>
-        <div className="mt-5 grid grid-cols-5 gap-2 sm:grid-cols-10">
-          {analytics.activity.map((day) => (
-            <div key={day.date} className="space-y-1">
-              <div className={`aspect-square rounded-md border border-line ${activityTone(day.count)}`} />
+            <div className="flex items-center gap-2">
+              <Database className="h-4 w-4 text-muted" />
+              <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Ограничения API</p>
             </div>
-          ))}
+            <h2 className="mt-2 text-2xl text-ink">Что реально доступно</h2>
+          </div>
+          <Badge>live backend</Badge>
+        </div>
+        <div className="mt-5 space-y-3 text-sm text-muted">
+          <p>Поиск статей работает через `articles/search`.</p>
+          <p>После выбора статья сохраняется через `articles/download` и получает UUID.</p>
+          <p>Оценка и обзор вызываются реальными эндпоинтами `evaluations/evaluate` и `reviews/write`.</p>
         </div>
       </Card>
 
       <Card>
-        <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">История изучения</p>
-        <h2 className="mt-2 text-2xl text-ink">Последние сессии</h2>
-        <div className="mt-4 space-y-4">
-          {history.map((item) => (
-            <div key={item.id} className="rounded-[22px] border border-line bg-paper/75 p-4">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm text-ink">{item.title}</p>
-                  <p className="mt-1 font-mono text-xs uppercase tracking-[0.22em] text-muted">{formatStatus(item.status)}</p>
-                </div>
-                <p className="text-xs text-muted">{new Date(item.lastOpenedAt).toLocaleDateString()}</p>
-              </div>
-              <div className="mt-3">
-                <Meter value={item.progress} />
-              </div>
-            </div>
-          ))}
+        <div className="flex items-center gap-2">
+          <Activity className="h-4 w-4 text-muted" />
+          <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Что отключено</p>
+        </div>
+        <h2 className="mt-2 text-2xl text-ink">Моки больше не нужны</h2>
+        <div className="mt-4 space-y-3 text-sm text-muted">
+          <p>Фронт больше не использует MSW и не стучится в `/api/history` или `/api/analytics`.</p>
+          <p>Квиз и рекомендации временно скрыты как отдельные backend-фичи, потому что для них нет маршрутов в FastAPI.</p>
         </div>
       </Card>
     </div>

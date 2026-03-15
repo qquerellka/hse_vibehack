@@ -8,8 +8,8 @@ type SelectedArticleState = {
 }
 
 export const useSelectedArticle = create<SelectedArticleState>((set) => ({
-  selectedArticleId: '2601.11464',
-  searchTerm: '',
+  selectedArticleId: '',
+  searchTerm: 'llm agents',
   setSelectedArticleId: (selectedArticleId) => set({ selectedArticleId }),
   setSearchTerm: (searchTerm) => set({ searchTerm }),
 }))

@@ -4,14 +4,9 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { queryClient } from './app/providers/query-client'
 import { App } from './app/App'
-import { enableMocking } from './shared/mocks/browser'
 import './index.css'
 
-async function bootstrap() {
-  if (import.meta.env.DEV) {
-    await enableMocking()
-  }
-
+function bootstrap() {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -23,4 +18,4 @@ async function bootstrap() {
   )
 }
 
-void bootstrap()
+bootstrap()
