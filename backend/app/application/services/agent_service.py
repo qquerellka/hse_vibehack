@@ -1,173 +1,214 @@
-"""
-Сервис для работы с агентами анализа статей.
+"""Сервис для работы с агентами анализа статей."""
+import re
+import asyncio
+from typing import List
+from uuid import UUID, uuid4
+from datetime import datetime
 
-ВАЖНО: Этот модуль содержит МОКИ (заглушки) для агентов.
-Реальная реализация агентов (DescribeAgent, EvalAgent, WriterAgent)
-будет добавлена другим разработчиком.
-
-Все методы помечены как МОКИ и возвращают тестовые данные.
-"""
-
-from typing import List, Optional
-from uuid import UUID
 from app.application.dto.evaluation_dto import EvaluationDTO
 from app.application.dto.review_dto import ReviewDTO
+from app.infrastructure.config.settings import settings
 
 
 class AgentService:
     """
     Сервис для работы с агентами анализа статей.
-    
-    ⚠️ МОК-РЕАЛИЗАЦИЯ ⚠️
-    Этот сервис содержит заглушки для:
-    - DescribeAgent (описание изображений)
-    - EvalAgent (оценка статей)
-    - WriterAgent (написание обзоров)
-    
-    Для подключения реальных агентов замените методы этого класса.
+
+    Использует DescribeAgent, EvalAgent и WriterAgent из LangGraph
+    для описания изображений, оценки статей и написания обзоров.
     """
 
+    def __init__(self):
+        self._describe_agent = None
+        self._eval_agent = None
+        self._writer_agent = None
+
+    def _get_describe_agent(self):
+        if self._describe_agent is None:
+            from app.infrastructure.agents.describe_agent import DescribeAgent
+
+            self._describe_agent = DescribeAgent(
+                api_key=settings.OPENROUTER_API_KEY,
+                base_url=settings.OPENROUTER_BASE_URL,
+            )
+        return self._describe_agent
+
+    def _get_eval_agent(self):
+        if self._eval_agent is None:
+            from app.infrastructure.agents.eval_agent import EvalAgent
+
+            self._eval_agent = EvalAgent(
+                api_key=settings.OPENROUTER_API_KEY,
+                base_url=settings.OPENROUTER_BASE_URL,
+            )
+        return self._eval_agent
+
+    def _get_writer_agent(self):
+        if self._writer_agent is None:
+            from app.infrastructure.agents.writer_agent import WriterAgent
+
+            self._writer_agent = WriterAgent(
+                api_key=settings.OPENROUTER_API_KEY,
+                base_url=settings.OPENROUTER_BASE_URL,
+                tavily_api_key=settings.TAVILY_API_KEY,
+            )
+        return self._writer_agent
+
     async def describe_images(self, image_paths: List[str]) -> List[str]:
-        """
-        Описать изображения из статьи.
-        
-        ⚠️ МОК-РЕАЛИЗАЦИЯ ⚠️
-        Реальная реализация должна использовать vision-модель через OpenRouter
-        (как в оригинальном коде: agents/describe_agent.py:18)
-        
-        Args:
-            image_paths: Список путей к изображениям
-        
-        Returns:
-            Список описаний изображений
-        """
-        # TODO: Подключить реальный DescribeAgent
-        # Ожидаемая реализация:
-        # - Использование vision-модели через OpenRouter API
-        # - Анализ каждого изображения
-        # - Возврат структурированных описаний
-        
-        return [
-            f"[MOCK] Описание изображения {i+1}: Это тестовое описание изображения из статьи."
-            for i, _ in enumerate(image_paths)
-        ]
+        """Описать изображения из статьи с помощью vision-модели."""
+        agent = self._get_describe_agent()
+        descriptions = []
+        for path in image_paths:
+            try:
+                desc = await asyncio.to_thread(agent.run, path)
+                descriptions.append(desc)
+            except Exception as e:
+                descriptions.append(f"Не удалось описать изображение: {e}")
+        return descriptions
 
     async def evaluate_article(
         self,
         article_id: UUID,
         article_content: str,
-        image_descriptions: List[str]
+        image_descriptions: List[str],
     ) -> EvaluationDTO:
-        """
-        Оценить статью по структурированной схеме.
-        
-        ⚠️ МОК-РЕАЛИЗАЦИЯ ⚠️
-        Реальная реализация должна использовать EvalAgent с Pydantic-схемой
-        (как в оригинальном коде: agents/review_agent.py:17)
-        
-        Args:
-            article_id: ID статьи
-            article_content: Содержимое статьи
-            image_descriptions: Описания изображений
-        
-        Returns:
-            Структурированная оценка статьи
-        """
-        # TODO: Подключить реальный EvalAgent
-        # Ожидаемая реализация:
-        # - Использование LLM для анализа статьи
-        # - Заполнение структурированной Pydantic-схемы оценки
-        # - Возврат EvaluationDTO с баллами 1-5 и обоснованием
-        
-        from uuid import uuid4
-        from datetime import datetime
-        
+        """Оценить статью с помощью EvalAgent."""
+        agent = self._get_eval_agent()
+
+        # Build combined content (same format as GraphMAS)
+        if image_descriptions:
+            combined = (
+                f"=== ОПИСАНИЯ ИЗОБРАЖЕНИЙ ({len(image_descriptions)} шт.) ===\n"
+                + "\n\n".join(image_descriptions)
+                + f"\n\n=== ТЕКСТ СТАТЬИ ===\n{article_content}"
+            )
+        else:
+            combined = article_content
+
+        result = await asyncio.to_thread(
+            agent.run_with_state, {"messages": combined, "review": None}
+        )
+
+        review_obj = result.get("review")
+        if review_obj is None:
+            # Fallback with default scores if agent fails
+            return EvaluationDTO(
+                id=uuid4(),
+                article_id=article_id,
+                category="Unknown",
+                relevance="Не удалось оценить",
+                novelty_score=3,
+                methodology_score=3,
+                impact_score=3,
+                overall_score=3,
+                pros=["Не удалось выполнить оценку"],
+                cons=["Агент не вернул результат"],
+                justification="EvalAgent не смог обработать статью. Попробуйте позже.",
+                created_at=datetime.utcnow(),
+                updated_at=None,
+            )
+
         return EvaluationDTO(
             id=uuid4(),
             article_id=article_id,
-            category="[MOCK] Computer Science",
-            relevance="[MOCK] Статья релевантна для исследования",
-            novelty_score=3,
-            methodology_score=4,
-            impact_score=3,
-            overall_score=3,
-            pros=[
-                "[MOCK] Хорошая методология",
-                "[MOCK] Интересные результаты"
-            ],
-            cons=[
-                "[MOCK] Недостаточно экспериментов",
-                "[MOCK] Требуется больше данных"
-            ],
-            justification="[MOCK] Это тестовая оценка. Реальная оценка будет генерироваться EvalAgent.",
+            category=review_obj.nlp_category,
+            relevance="Relevant" if review_obj.is_relevant else "Not relevant",
+            novelty_score=review_obj.scores.novelty,
+            methodology_score=review_obj.scores.rigor,
+            impact_score=review_obj.scores.impact,
+            overall_score=review_obj.scores.overall,
+            pros=review_obj.pros,
+            cons=review_obj.cons,
+            justification=review_obj.reasoning,
             created_at=datetime.utcnow(),
-            updated_at=None
+            updated_at=None,
         )
 
     async def write_review(
         self,
         article_id: UUID,
         article_content: str,
-        image_descriptions: List[str]
+        image_descriptions: List[str],
     ) -> ReviewDTO:
-        """
-        Написать обзор статьи на русском языке.
-        
-        ⚠️ МОК-РЕАЛИЗАЦИЯ ⚠️
-        Реальная реализация должна использовать WriterAgent
-        (как в оригинальном коде: agents/writer_agent.py:19)
-        Может использовать Tavily для дополнительного поиска информации.
-        
-        Args:
-            article_id: ID статьи
-            article_content: Содержимое статьи
-            image_descriptions: Описания изображений
-        
-        Returns:
-            Обзор статьи на русском языке
-        """
-        # TODO: Подключить реальный WriterAgent
-        # Ожидаемая реализация:
-        # - Использование LLM для генерации обзора на русском
-        # - Возможность использования Tavily для дополнительного поиска
-        # - Генерация полного обзора в Markdown формате
-        # - Структура: резюме, методы, результаты, критика, применение, вердикт
-        
-        from uuid import uuid4
-        from datetime import datetime
-        
-        full_text = f"""# Обзор статьи
+        """Написать обзор статьи с помощью WriterAgent."""
+        agent = self._get_writer_agent()
 
-## Резюме
-[MOCK] Это тестовый обзор статьи. Реальная реализация будет генерироваться WriterAgent.
+        if image_descriptions:
+            combined = (
+                f"=== ОПИСАНИЯ ИЗОБРАЖЕНИЙ ({len(image_descriptions)} шт.) ===\n"
+                + "\n\n".join(image_descriptions)
+                + f"\n\n=== ТЕКСТ СТАТЬИ ===\n{article_content}"
+            )
+        else:
+            combined = article_content
 
-## Методы
-[MOCK] Описание методов из статьи.
+        full_text = await asyncio.to_thread(agent.run, combined)
 
-## Результаты
-[MOCK] Основные результаты исследования.
+        sections = self._parse_review_sections(full_text)
 
-## Критика
-[MOCK] Критический анализ работы.
-
-## Применение
-[MOCK] Возможные области применения.
-
-## Вердикт
-[MOCK] Итоговое заключение по статье.
-"""
-        
         return ReviewDTO(
             id=uuid4(),
             article_id=article_id,
-            summary="[MOCK] Краткое резюме статьи",
-            methods="[MOCK] Описание методов",
-            results="[MOCK] Основные результаты",
-            criticism="[MOCK] Критический анализ",
-            application="[MOCK] Области применения",
-            verdict="[MOCK] Итоговое заключение",
+            summary=sections.get("summary", ""),
+            methods=sections.get("methods", ""),
+            results=sections.get("results", ""),
+            criticism=sections.get("criticism", ""),
+            application=sections.get("application", ""),
+            verdict=sections.get("verdict", ""),
             full_text=full_text,
             created_at=datetime.utcnow(),
-            updated_at=None
+            updated_at=None,
         )
 
+    @staticmethod
+    def _parse_review_sections(markdown_text: str) -> dict:
+        """Parse WriterAgent markdown output into ReviewDTO sections.
+
+        The writer produces sections with Russian headers like:
+        - Краткое резюме / Executive Summary -> summary
+        - Ключевые идеи и методы -> methods
+        - Результаты и эксперименты -> results
+        - Сильные и слабые стороны / Critique -> criticism
+        - Практическое применение -> application
+        - Вердикт -> verdict
+        """
+        section_keywords = {
+            "summary": ["резюме", "executive summary", "summary"],
+            "methods": ["ключевые идеи", "метод", "methods", "идеи и методы"],
+            "results": ["результат", "эксперимент", "results"],
+            "criticism": [
+                "сильные и слабые",
+                "critique",
+                "критик",
+                "слабые стороны",
+            ],
+            "application": ["применение", "практическое", "application"],
+            "verdict": ["вердикт", "verdict", "заключение"],
+        }
+
+        sections = {
+            "summary": "",
+            "methods": "",
+            "results": "",
+            "criticism": "",
+            "application": "",
+            "verdict": "",
+        }
+
+        # Split by markdown headers (## or **...**)
+        parts = re.split(r"\n(?=#{1,3}\s|(?:\*\*[^*]+\*\*))", markdown_text)
+
+        current_key = "summary"  # default first section
+        for part in parts:
+            header_match = re.match(r"^#{1,3}\s*(.+)", part) or re.match(
+                r"^\*\*(.+?)\*\*", part
+            )
+            if header_match:
+                header_text = header_match.group(1).lower().strip()
+                for key, keywords in section_keywords.items():
+                    if any(kw in header_text for kw in keywords):
+                        current_key = key
+                        break
+            sections[current_key] += part.strip() + "\n\n"
+
+        return {k: v.strip() for k, v in sections.items()}

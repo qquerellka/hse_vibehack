@@ -5,5 +5,20 @@ pydantic-settings==2.1.0
 sqlalchemy==2.0.23
 psycopg2-binary==2.9.9
 python-dotenv==1.0.0
-# aiohttp и aiofiles будут добавлены при подключении реальной реализации ArxivClient и FileService
 
+# LangChain / LangGraph (agents)
+langchain
+langchain-openai
+langchain-community
+langgraph
+langgraph-checkpoint
+langgraph-prebuilt
+langchain-tavily
+langsmith
+
+# arXiv and PDF processing
+arxiv
+pymupdf4llm
+PyMuPDF
+requests
+Pillow

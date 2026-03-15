@@ -30,7 +30,18 @@ class Settings(BaseSettings):
     
     # CORS
     CORS_ORIGINS: List[str] = ["*"]
-    
+
+    # OpenRouter (LLM agents)
+    OPENROUTER_API_KEY: str = ""
+    OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
+
+    # Tavily (web search for WriterAgent)
+    TAVILY_API_KEY: str = ""
+
+    # File storage
+    DOWNLOADS_DIR: str = "./downloads"
+    EXTRACTED_IMAGES_DIR: str = "./extracted_images"
+
     class Config:
         env_file = ".env"
         case_sensitive = True

@@ -9,6 +9,7 @@ from app.infrastructure.repositories import (
 )
 from app.infrastructure.external import ArxivClient, FileService
 from app.application.services.agent_service import AgentService
+from app.infrastructure.config.settings import settings
 
 
 # Создаем singleton экземпляры
@@ -16,7 +17,10 @@ _article_repository: ArticleRepository = InMemoryArticleRepository()
 _evaluation_repository: EvaluationRepository = InMemoryEvaluationRepository()
 _review_repository: ReviewRepository = InMemoryReviewRepository()
 _arxiv_client = ArxivClient()
-_file_service = FileService()
+_file_service = FileService(
+    downloads_dir=settings.DOWNLOADS_DIR,
+    extracted_images_dir=settings.EXTRACTED_IMAGES_DIR,
+)
 _agent_service = AgentService()
 
 

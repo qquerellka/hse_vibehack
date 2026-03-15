@@ -1,7 +1,6 @@
 FROM python:3.11-slim
 
 # Установка рабочей директории внутри контейнера
-# Вся логика backend лежит в папке /app/backend
 WORKDIR /app/backend
 
 # Установка системных зависимостей
@@ -19,9 +18,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Копирование кода backend
 COPY backend .
 
+# Создание директорий для файлов
+RUN mkdir -p /app/backend/downloads /app/backend/extracted_images
+
 # Открытие порта
 EXPOSE 8000
 
 # Команда запуска backend-приложения
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
