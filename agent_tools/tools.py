@@ -430,8 +430,7 @@ def parse_img_from_pdf(path_to_pdf: str) -> str:
         A message with the paths to all extracted images or an error message.
     """
     base_path = Path(path_to_pdf)
-    output_folder = Path("/Users/switchblade/Documents/vs_code/science_helpy_3/extracted_images")
-
+    output_folder = Path("./extracted_images")
     output_folder.mkdir(parents=True, exist_ok=True)
 
     # Create a subfolder for this specific PDF

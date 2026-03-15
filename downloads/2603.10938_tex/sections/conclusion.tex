@@ -1,0 +1,4 @@
+In this work, we argued that safety in RLHF should control the full distribution of policy-induced costs, rather than only a central statistic, like their expectation. We proposed \emph{Risk-sensitive Alignment via Dominance} (RAD), which enforces first-order stochastic dominance relative to a reference policy and admits a practical optimization procedure via quantile surrogates and entropic optimal transport.
+By introducing quantile-weighted objectives, RAD also provides a unified mechanism for controlling a broad class of spectral risk measures, allowing safety preferences to be tuned toward different parts of the cost distribution.
+Empirically, our results show that RAD can improve harmlessness over expectation-based baselines while remaining competitive in helpfulness, with several variants also showing stronger robustness on out-of-distribution harmfulness evaluations.
+

@@ -67,6 +67,8 @@ class GraphMAS:
         graph.add_node("writer_agent", self._run_write_agent)
         graph.add_node("describe_images_for_eval", self._describe_images_for_eval)
         graph.add_node("describe_images_for_write", self._describe_images_for_write)
+        # Новый узел для генерации теста
+        graph.add_node("quiz_agent", self._run_quiz_agent)
 
         graph.add_edge(START, "coordinator_agent")
         graph.add_conditional_edges(
@@ -76,6 +78,7 @@ class GraphMAS:
                 "coordinator_agent": "coordinator_agent",
                 "eval": "describe_images_for_eval",
                 "writer": "describe_images_for_write",
+                "quiz": "quiz_agent",
                 "end": END
             }
         )
@@ -83,27 +86,47 @@ class GraphMAS:
         graph.add_edge("describe_images_for_write", "writer_agent")
         graph.add_edge("eval_agent", "coordinator_agent")
         graph.add_edge("writer_agent", END)
+        graph.add_edge("quiz_agent", END)
 
         return graph.compile(checkpointer=self.memory)
        
     
     def _router(self, state: MainState) -> str:
         last_message = state["messages"][-1]
-        content = last_message.content.upper()
+        content = last_message.content.lower()
 
-        if "[EVAL]" in content:
+        if "[eval]" in content:
             destination = "eval"
-        elif "[DESCRIBE]" in content:
+        elif "[describe]" in content:
             destination = "describe"
-        elif "[WRITE]" in content:
+        elif "[write]" in content:
             destination = "writer"
-        elif "[END]" in content:
+        # Новый маршрут: если пользователь явно просит тест
+        elif "[quiz]" in content or "сделай тест" in content or "тест по статье" in content or "quiz" in content:
+            destination = "quiz"
+        elif "[end]" in content:
             destination = "end"
         else:
             destination = "end"
 
         print(f"[graph] router --> {destination}")
         return destination
+
+    def _run_quiz_agent(self, state: MainState) -> MainState:
+        """
+        Вызывает генерацию теста по статье через WriterAgent.
+        """
+        paper_text = state.get("paper_content") or state["messages"][-1].content
+        print(f"[graph] --> WriterAgent (quiz, текст: {len(paper_text)} символов)")
+
+        final_message = self.writer_agent.run_quiz(paper_text)
+
+        print(f"[graph] <-- WriterAgent сгенерировал тест")
+        return {
+            **state,
+            "messages": [final_message],
+            "written_review": final_message.content,
+        }
         
 
     def _extract_tool_results(self, messages: list) -> dict:
@@ -225,22 +248,6 @@ class GraphMAS:
             "paper_content": new_paper_content,
             "selected_paper_path": new_paper_path,
             "extracted_images_path": new_extracted_images_path,
-        }
-
-    def _run_write_agent(self, state: MainState) -> MainState:
-        paper_text = state.get("paper_content") or state["messages"][-1].content
-        print(f"[graph] --> WriterAgent (текст: {len(paper_text)} символов)")
-
-        write_state = {"messages": [HumanMessage(content=paper_text)]}
-        result = self.writer_agent.run_with_state(write_state)
-
-        final_message = result["messages"][-1]
-        print(f"[graph] <-- WriterAgent завершил работу")
-
-        return {
-            **state,
-            "messages": [final_message],
-            "written_review": final_message.content,
         }
 
     def _run_describe_agent(self, state: MainState) -> MainState:
@@ -484,24 +491,40 @@ class GraphMAS:
 
 if __name__ == "__main__":
     mas = GraphMAS()
-    
+
+    # Сохраняем состояние между запросами
+    state = {}
     user_input = input("Здравствуйте! Введите запрос для научного помощника (или 'exit' для выхода):\n")
     while user_input.lower() != "exit":
-        result = mas.run(user_input)
-        
+        # Если есть сохранённое состояние, передаём его в run
+        if state:
+            # Передаём paper_content, selected_paper_path и т.д. если они есть
+            initial_state = {k: v for k, v in state.items() if v is not None}
+            initial_state["messages"] = [HumanMessage(content=user_input)]
+            result = mas.graph.invoke(
+                initial_state,
+                config={"configurable": {"thread_id": f"graph-mas-{mas.date}"}}
+            )
+        else:
+            result = mas.run(user_input)
+
         last_msg = result["messages"][-1]
         print(f"\nОТВЕТ:\n{last_msg.content}\n")
-        
+
+        # Сохраняем paper_content, selected_paper_path и др. для следующего шага
+        for key in ["paper_content", "selected_paper_path", "extracted_images_path", "review_data", "written_review", "all_image_descriptions"]:
+            if key in result:
+                state[key] = result[key]
+
         if hasattr(last_msg, "usage_metadata") and last_msg.usage_metadata:
             usage = last_msg.usage_metadata
             input_tokens = usage.get("input_tokens", 0)
             output_tokens = usage.get("output_tokens", 0)
             total_tokens = usage.get("total_tokens", 0)
-            
             print(f"--- Статистика токенов ---")
             print(f"Вход (Prompt): {input_tokens}")
             print(f"Выход (Completion): {output_tokens}")
             print(f"Всего: {total_tokens}")
             print(f"--------------------------")
-        
+
         user_input = input("Введите запрос: ")

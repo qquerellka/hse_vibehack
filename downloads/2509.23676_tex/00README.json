@@ -1,0 +1,37 @@
+{
+   "sources" : [
+      {
+         "usage" : "toplevel",
+         "filename" : "latex/arXiv_version.tex"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "anthology.bib.txt"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "arXiv_version.bbl"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "formatting.md"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "latex/acl.sty"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "latex/acl_natbib.bst"
+      },
+      {
+         "usage" : "ignore",
+         "filename" : "latex/main.bib"
+      }
+   ],
+   "spec_version" : 1,
+   "texlive_version" : "2025",
+   "process" : {
+      "compiler" : "pdflatex"
+   }
+}

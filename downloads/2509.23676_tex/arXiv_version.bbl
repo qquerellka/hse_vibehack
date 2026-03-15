@@ -1,0 +1,243 @@
+\begin{thebibliography}{48}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[{Ameisen et~al.(2025)Ameisen, Lindsey, Pearce, Gurnee, Turner, Chen, Citro, Abrahams, Carter, Hosmer, Marcus, Sklar, Templeton, Bricken, McDougall, Cunningham, Henighan, Jermyn, Jones, Persic, Qi, Thompson, Zimmerman, Rivoire, Conerly, Olah, and Batson}]{anthropic2025circuit}
+Emmanuel Ameisen, Jack Lindsey, Adam Pearce, Wes Gurnee, Nicholas~L. Turner, Brian Chen, Craig Citro, David Abrahams, Shan Carter, Basil Hosmer, Jonathan Marcus, Michael Sklar, Adly Templeton, Trenton Bricken, Callum McDougall, Hoagy Cunningham, Thomas Henighan, Adam Jermyn, Andy Jones, Andrew Persic, Zhenyi Qi, T.~Ben Thompson, Sam Zimmerman, Kelley Rivoire, Thomas Conerly, Chris Olah, and Joshua Batson. 2025.
+\newblock \href {https://transformer-circuits.pub/2025/attribution-graphs/methods.html} {Circuit tracing: Revealing computational graphs in language models}.
+\newblock \emph{Transformer Circuits}.
+
+\bibitem[{Arcuschin et~al.(2025)Arcuschin, Janiak, Krzyzanowski, Rajamanoharan, Nanda, and Conmy}]{arcuschin2025chainofthoughtreasoningwildfaithful}
+Iv{\'a}n Arcuschin, Jett Janiak, Robert Krzyzanowski, Senthooran Rajamanoharan, Neel Nanda, and Arthur Conmy. 2025.
+\newblock \href {https://openreview.net/forum?id=L8094Whth0} {Chain-of-thought reasoning in the wild is not always faithful}.
+\newblock In \emph{Workshop on Reasoning and Planning for Large Language Models}.
+
+\bibitem[{Atanasova et~al.(2023)Atanasova, Camburu, Lioma, Lukasiewicz, Simonsen, and Augenstein}]{atanasova-etal-2023-faithfulness}
+Pepa Atanasova, Oana-Maria Camburu, Christina Lioma, Thomas Lukasiewicz, Jakob~Grue Simonsen, and Isabelle Augenstein. 2023.
+\newblock \href {https://doi.org/10.18653/v1/2023.acl-short.25} {Faithfulness tests for natural language explanations}.
+\newblock In \emph{Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 2: Short Papers)}, pages 283--294, Toronto, Canada. Association for Computational Linguistics.
+
+\bibitem[{Baek and Tegmark(2025)}]{baek2025understandingdistilledreasoningmodels}
+David~D. Baek and Max Tegmark. 2025.
+\newblock \href {https://openreview.net/forum?id=UYZCcnwgc4} {Towards understanding distilled reasoning models: A representational approach}.
+\newblock In \emph{ICLR 2025 Workshop on Building Trust in Language Models and Applications}.
+
+\bibitem[{Baker et~al.(2025)Baker, Huizinga, Gao, Dou, Guan, Madry, Zaremba, Pachocki, and Farhi}]{baker2025monitoring}
+Bowen Baker, Joost Huizinga, Leo Gao, Zehao Dou, Melody~Y. Guan, Aleksander Madry, Wojciech Zaremba, Jakub Pachocki, and David Farhi. 2025.
+\newblock \href {https://arxiv.org/abs/2503.11926} {Monitoring reasoning models for misbehavior and the risks of promoting obfuscation}.
+\newblock \emph{Preprint}, arXiv:2503.11926.
+
+\bibitem[{Ballon et~al.(2025)Ballon, Algaba, and Ginis}]{ballon2025relationshipreasoningperformancelarge}
+Marthe Ballon, Andres Algaba, and Vincent Ginis. 2025.
+\newblock \href {https://arxiv.org/abs/2502.15631} {The relationship between reasoning and performance in large language models -- o3 (mini) thinks harder, not longer}.
+\newblock \emph{Preprint}, arXiv:2502.15631.
+
+\bibitem[{Barbero et~al.(2025)Barbero, Álvaro Arroyo, Gu, Perivolaropoulos, Bronstein, Veličković, and Pascanu}]{barbero2025llmsattendtoken}
+Federico Barbero, Álvaro Arroyo, Xiangming Gu, Christos Perivolaropoulos, Michael Bronstein, Petar Veličković, and Razvan Pascanu. 2025.
+\newblock \href {https://arxiv.org/abs/2504.02732} {Why do llms attend to the first token?}
+\newblock \emph{Preprint}, arXiv:2504.02732.
+
+\bibitem[{Bereska and Gavves(2024)}]{bereska_mechanistic_2024}
+Leonard Bereska and Efstratios Gavves. 2024.
+\newblock \href {https://openreview.net/forum?id=ePUVetPKu6} {Mechanistic interpretability for ai safety - a review}.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Cabannes et~al.(2024)Cabannes, Arnal, Bouaziz, Yang, Charton, and Kempe}]{NEURIPS2024_c50f8180}
+Vivien Cabannes, Charles Arnal, Wassim Bouaziz, Alice Yang, Francois Charton, and Julia Kempe. 2024.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2024/file/c50f8180ef34060ec59b75d6e1220f7a-Paper-Conference.pdf} {Iteration head: A mechanistic study of chain-of-thought}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~37, pages 109101--109122. Curran Associates, Inc.
+
+\bibitem[{Chen et~al.(2025)Chen, Benton, Radhakrishnan, Uesato, Denison, Schulman, Somani, Hase, Wagner, Roger, Mikulik, Bowman, Leike, Kaplan, and Perez}]{chen2025reasoningmodelsdontsay}
+Yanda Chen, Joe Benton, Ansh Radhakrishnan, Jonathan Uesato, Carson Denison, John Schulman, Arushi Somani, Peter Hase, Misha Wagner, Fabien Roger, Vlad Mikulik, Samuel~R. Bowman, Jan Leike, Jared Kaplan, and Ethan Perez. 2025.
+\newblock \href {https://arxiv.org/abs/2505.05410} {Reasoning models don't always say what they think}.
+\newblock \emph{Preprint}, arXiv:2505.05410.
+
+\bibitem[{Chua and Evans(2025)}]{chua2025deepseekr1reasoningmodels}
+James Chua and Owain Evans. 2025.
+\newblock \href {https://arxiv.org/abs/2501.08156} {Are deepseek r1 and other reasoning models more faithful?}
+\newblock \emph{Preprint}, arXiv:2501.08156.
+
+\bibitem[{Cooney and Nanda(2023)}]{cooney2023circuitsvis}
+Alan Cooney and Neel Nanda. 2023.
+\newblock Circuitsvis.
+\newblock \url{https://github.com/TransformerLensOrg/CircuitsVis}.
+
+\bibitem[{Dutta et~al.(2024)Dutta, Singh, Chakrabarti, and Chakraborty}]{dutta2024thinkstepbystepmechanisticunderstanding}
+Subhabrata Dutta, Joykirat Singh, Soumen Chakrabarti, and Tanmoy Chakraborty. 2024.
+\newblock \href {https://openreview.net/forum?id=uHLDkQVtyC} {How to think step-by-step: A mechanistic understanding of chain-of-thought reasoning}.
+\newblock \emph{Transactions on Machine Learning Research}.
+
+\bibitem[{Galichin et~al.(2025)Galichin, Dontsov, Druzhinina, Razzhigaev, Rogov, Tutubalina, and Oseledets}]{galichin2025icoveredbaseshere}
+Andrey Galichin, Alexey Dontsov, Polina Druzhinina, Anton Razzhigaev, Oleg~Y. Rogov, Elena Tutubalina, and Ivan Oseledets. 2025.
+\newblock \href {https://arxiv.org/abs/2503.18878} {I have covered all the bases here: Interpreting reasoning features in large language models via sparse autoencoders}.
+\newblock \emph{Preprint}, arXiv:2503.18878.
+
+\bibitem[{Geiger et~al.(2021)Geiger, Lu, Icard, and Potts}]{NEURIPS2021_4f5c422f}
+Atticus Geiger, Hanson Lu, Thomas Icard, and Christopher Potts. 2021.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2021/file/4f5c422f4d49a5a807eda27434231040-Paper.pdf} {Causal abstractions of neural networks}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~34, pages 9574--9586. Curran Associates, Inc.
+
+\bibitem[{Geva et~al.(2021)Geva, Schuster, Berant, and Levy}]{geva2021transformerfeedforwardlayerskeyvalue}
+Mor Geva, Roei Schuster, Jonathan Berant, and Omer Levy. 2021.
+\newblock \href {https://arxiv.org/abs/2012.14913} {Transformer feed-forward layers are key-value memories}.
+\newblock \emph{Preprint}, arXiv:2012.14913.
+
+\bibitem[{Gu et~al.(2025)Gu, Pang, Du, Liu, Zhang, Du, Wang, and Lin}]{gu2025attentionsinkemergeslanguage}
+Xiangming Gu, Tianyu Pang, Chao Du, Qian Liu, Fengzhuo Zhang, Cunxiao Du, Ye~Wang, and Min Lin. 2025.
+\newblock \href {https://openreview.net/forum?id=78Nn4QJTEN} {When attention sink emerges in language models: An empirical view}.
+\newblock In \emph{The Thirteenth International Conference on Learning Representations}.
+
+\bibitem[{Guo et~al.(2025)Guo, Yang, Zhang et~al.}]{deepseekai2025deepseekr1incentivizingreasoningcapability}
+D.~Guo, D.~Yang, H.~Zhang, et~al. 2025.
+\newblock \href {https://doi.org/10.1038/s41586-025-09422-z} {Deepseek-r1 incentivizes reasoning in llms through reinforcement learning}.
+\newblock \emph{Nature}, 645:633--638.
+
+\bibitem[{Hazra et~al.(2025)Hazra, Loeffler, Cubuktepe, Avagyan, Gorton, Bissell, Lewis, McGrath, and Balsam}]{GoodfireResearch}
+Dron Hazra, Max Loeffler, Murat Cubuktepe, Levon Avagyan, Liv Gorton, Mark Bissell, Owen Lewis, Thomas McGrath, and Daniel Balsam. 2025.
+\newblock \href {https://www.goodfire.ai/blog/under-the-hood-of-a-reasoning-model} {Under the hood of a reasoning model}.
+
+\bibitem[{Heimersheim and Nanda(2024)}]{heimersheim2024useinterpretactivationpatching}
+Stefan Heimersheim and Neel Nanda. 2024.
+\newblock \href {https://arxiv.org/abs/2404.15255} {How to use and interpret activation patching}.
+\newblock \emph{Preprint}, arXiv:2404.15255.
+
+\bibitem[{Hendrycks et~al.(2021)Hendrycks, Burns, Kadavath, Arora, Basart, Tang, Song, and Steinhardt}]{NEURIPS_DATASETS_AND_BENCHMARKS2021_be83ab3e}
+Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song, and Jacob Steinhardt. 2021.
+\newblock \href {https://datasets-benchmarks-proceedings.neurips.cc/paper_files/paper/2021/file/be83ab3ecd0db773eb2dc1b0a17836a1-Paper-round2.pdf} {Measuring mathematical problem solving with the math dataset}.
+\newblock In \emph{Proceedings of the Neural Information Processing Systems Track on Datasets and Benchmarks}, volume~1.
+
+\bibitem[{Hou et~al.(2023)Hou, Li, Fei, Stolfo, Zhou, Zeng, Bosselut, and Sachan}]{hou-etal-2023-towards}
+Yifan Hou, Jiaoda Li, Yu~Fei, Alessandro Stolfo, Wangchunshu Zhou, Guangtao Zeng, Antoine Bosselut, and Mrinmaya Sachan. 2023.
+\newblock \href {https://doi.org/10.18653/v1/2023.emnlp-main.299} {Towards a mechanistic interpretation of multi-step reasoning capabilities of language models}.
+\newblock In \emph{Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing}, pages 4902--4919, Singapore. Association for Computational Linguistics.
+
+\bibitem[{Jacovi and Goldberg(2020)}]{jacovi-goldberg-2020-towards}
+Alon Jacovi and Yoav Goldberg. 2020.
+\newblock \href {https://doi.org/10.18653/v1/2020.acl-main.386} {Towards faithfully interpretable {NLP} systems: How should we define and evaluate faithfulness?}
+\newblock In \emph{Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics}, pages 4198--4205, Online. Association for Computational Linguistics.
+
+\bibitem[{Jahin et~al.(2025)Jahin, Zidan, Bao, Liang, Liu, and Zhang}]{jahin2025unveilingmathematicalreasoningdeepseek}
+Afrar Jahin, Arif~Hassan Zidan, Yu~Bao, Shizhe Liang, Tianming Liu, and Wei Zhang. 2025.
+\newblock \href {https://arxiv.org/abs/2503.10573} {Unveiling the mathematical reasoning in deepseek models: A comparative study of large language models}.
+\newblock \emph{Preprint}, arXiv:2503.10573.
+
+\bibitem[{Ju et~al.(2024)Ju, Sun, Du, Yuan, Ren, and Liu}]{ju-etal-2024-large}
+Tianjie Ju, Weiwei Sun, Wei Du, Xinwei Yuan, Zhaochun Ren, and Gongshen Liu. 2024.
+\newblock \href {https://aclanthology.org/2024.lrec-main.722/} {How large language models encode context knowledge? a layer-wise probing study}.
+\newblock In \emph{Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)}, pages 8235--8246, Torino, Italia. ELRA and ICCL.
+
+\bibitem[{Lanham et~al.(2023)Lanham, Chen, Radhakrishnan, Steiner, Denison, Hernandez, Li, Durmus, Hubinger, Kernion, Lukošiūtė, Nguyen, Cheng, Joseph, Schiefer, Rausch, Larson, McCandlish, Kundu, Kadavath, Yang, Henighan, Maxwell, Telleen-Lawton, Hume, Hatfield-Dodds, Kaplan, Brauner, Bowman, and Perez}]{lanham2023measuringfaithfulnesschainofthoughtreasoning}
+Tamera Lanham, Anna Chen, Ansh Radhakrishnan, Benoit Steiner, Carson Denison, Danny Hernandez, Dustin Li, Esin Durmus, Evan Hubinger, Jackson Kernion, Kamilė Lukošiūtė, Karina Nguyen, Newton Cheng, Nicholas Joseph, Nicholas Schiefer, Oliver Rausch, Robin Larson, Sam McCandlish, Sandipan Kundu, Saurav Kadavath, Shannon Yang, Thomas Henighan, Timothy Maxwell, Timothy Telleen-Lawton, Tristan Hume, Zac Hatfield-Dodds, Jared Kaplan, Jan Brauner, Samuel~R. Bowman, and Ethan Perez. 2023.
+\newblock \href {https://arxiv.org/abs/2307.13702} {Measuring faithfulness in chain-of-thought reasoning}.
+\newblock \emph{Preprint}, arXiv:2307.13702.
+
+\bibitem[{Li et~al.(2024)Li, Cao, Wang, Jin, Chen, Zeng, Liu, and Zhao}]{li2024focusquestioninterpretingmitigating}
+Jiachun Li, Pengfei Cao, Chenhao Wang, Zhuoran Jin, Yubo Chen, Daojian Zeng, Kang Liu, and Jun Zhao. 2024.
+\newblock \href {https://aclanthology.org/2024.acl-long.499.pdf} {Focus on your question! interpreting and mitigating toxic cot problems in commonsense reasoning}.
+\newblock In \emph{Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)}, pages 9206--9230.
+
+\bibitem[{Lightman et~al.(2024)Lightman, Kosaraju, Burda, Edwards, Baker, Lee, Leike, Schulman, Sutskever, and Cobbe}]{lightman2024lets}
+Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harrison Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. 2024.
+\newblock \href {https://openreview.net/forum?id=v8L0pN6EOi} {Let's verify step by step}.
+\newblock In \emph{The Twelfth International Conference on Learning Representations}.
+
+\bibitem[{Lin et~al.(2025)Lin, Deng, Chandu, Ravichander, Pyatkin, Dziri, Bras, and Choi}]{Lin2024WildBenchBL}
+Bill~Yuchen Lin, Yuntian Deng, Khyathi Chandu, Abhilasha Ravichander, Valentina Pyatkin, Nouha Dziri, Ronan~Le Bras, and Yejin Choi. 2025.
+\newblock \href {https://openreview.net/forum?id=MKEHCx25xp} {Wildbench: Benchmarking {LLM}s with challenging tasks from real users in the wild}.
+\newblock In \emph{The Thirteenth International Conference on Learning Representations}.
+
+\bibitem[{Ma et~al.(2025)Ma, He, Snell, Griggs, Min, and Zaharia}]{ma2025reasoningmodelseffectivethinking}
+Wenjie Ma, Jingxuan He, Charlie Snell, Tyler Griggs, Sewon Min, and Matei Zaharia. 2025.
+\newblock \href {https://arxiv.org/abs/2504.09858} {Reasoning models can be effective without thinking}.
+\newblock \emph{Preprint}, arXiv:2504.09858.
+
+\bibitem[{Marjanović et~al.(2025)Marjanović, Patel, Adlakha, Aghajohari, BehnamGhader, Bhatia, Khandelwal, Kraft, Krojer, Lù, Meade, Shin, Kazemnejad, Kamath, Mosbach, Stańczak, and Reddy}]{marjanović2025deepseekr1thoughtologyletsthink}
+Sara~Vera Marjanović, Arkil Patel, Vaibhav Adlakha, Milad Aghajohari, Parishad BehnamGhader, Mehar Bhatia, Aditi Khandelwal, Austin Kraft, Benno Krojer, Xing~Han Lù, Nicholas Meade, Dongchan Shin, Amirhossein Kazemnejad, Gaurav Kamath, Marius Mosbach, Karolina Stańczak, and Siva Reddy. 2025.
+\newblock \href {https://arxiv.org/abs/2504.07128} {Deepseek-r1 thoughtology: Let's think about llm reasoning}.
+\newblock \emph{Preprint}, arXiv:2504.07128.
+
+\bibitem[{Meng et~al.(2022)Meng, Bau, Andonian, and Belinkov}]{meng2022locating}
+Kevin Meng, David Bau, Alex Andonian, and Yonatan Belinkov. 2022.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2022/file/6f1d43d5a82a37e89b0665b33bf3a182-Paper-Conference.pdf} {Locating and editing factual associations in gpt}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~35, pages 17359--17372. Curran Associates, Inc.
+
+\bibitem[{Mueller et~al.(2025)Mueller, Brinkmann, Li, Marks, Pal, Prakash, Rager, Sankaranarayanan, Sharma, Sun, Todd, Bau, and Belinkov}]{mueller2025questrightmediatorsurveying}
+Aaron Mueller, Jannik Brinkmann, Millicent Li, Samuel Marks, Koyena Pal, Nikhil Prakash, Can Rager, Aruna Sankaranarayanan, Arnab~Sen Sharma, Jiuding Sun, Eric Todd, David Bau, and Yonatan Belinkov. 2025.
+\newblock \href {https://arxiv.org/abs/2408.01416} {The quest for the right mediator: Surveying mechanistic interpretability through the lens of causal mediation analysis}.
+\newblock \emph{Preprint}, arXiv:2408.01416.
+
+\bibitem[{Muennighoff et~al.(2025)Muennighoff, Yang, Shi, Li, Fei-Fei, Hajishirzi, Zettlemoyer, Liang, Candes, and Hashimoto}]{muennighoff2025s1simpletesttimescaling}
+Niklas Muennighoff, Zitong Yang, Weijia Shi, Xiang~Lisa Li, Li~Fei-Fei, Hannaneh Hajishirzi, Luke Zettlemoyer, Percy Liang, Emmanuel Candes, and Tatsunori Hashimoto. 2025.
+\newblock \href {https://openreview.net/forum?id=LdH0vrgAHm} {s1: Simple test-time scaling}.
+\newblock In \emph{Workshop on Reasoning and Planning for Large Language Models}.
+
+\bibitem[{Nanda and Bloom(2022)}]{nanda2022transformerlens}
+Neel Nanda and Joseph Bloom. 2022.
+\newblock Transformerlens.
+\newblock \url{https://github.com/TransformerLensOrg/TransformerLens}.
+
+\bibitem[{Olah et~al.(2020)Olah, Cammarata, Schubert, Goh, Petrov, and Carter}]{olah2020zoom}
+Chris Olah, Nick Cammarata, Ludwig Schubert, Gabriel Goh, Michael Petrov, and Shan Carter. 2020.
+\newblock \href {https://doi.org/10.23915/distill.00024.001} {Zoom in: An introduction to circuits}.
+\newblock \emph{Distill}.
+\newblock Https://distill.pub/2020/circuits/zoom-in.
+
+\bibitem[{Olsson et~al.(2022)Olsson, Elhage, Nanda, Joseph, DasSarma, Henighan, Mann, Askell, Bai, Chen, Conerly, Drain, Ganguli, Hatfield-Dodds, Hernandez, Johnston, Jones, Kernion, Lovitt, Ndousse, Amodei, Brown, Clark, Kaplan, McCandlish, and Olah}]{olsson2022incontextlearninginductionheads}
+Catherine Olsson, Nelson Elhage, Neel Nanda, Nicholas Joseph, Nova DasSarma, Tom Henighan, Ben Mann, Amanda Askell, Yuntao Bai, Anna Chen, Tom Conerly, Dawn Drain, Deep Ganguli, Zac Hatfield-Dodds, Danny Hernandez, Scott Johnston, Andy Jones, Jackson Kernion, Liane Lovitt, Kamal Ndousse, Dario Amodei, Tom Brown, Jack Clark, Jared Kaplan, Sam McCandlish, and Chris Olah. 2022.
+\newblock \href {https://arxiv.org/abs/2209.11895} {In-context learning and induction heads}.
+\newblock \emph{Preprint}, arXiv:2209.11895.
+
+\bibitem[{OpenAI(2024)}]{openai2024openaio1card}
+OpenAI. 2024.
+\newblock \href {https://arxiv.org/abs/2412.16720} {Openai o1 system card}.
+\newblock \emph{Preprint}, arXiv:2412.16720.
+
+\bibitem[{Parcalabescu and Frank(2024)}]{parcalabescu2024measuringfaithfulnessselfconsistencynatural}
+Letitia Parcalabescu and Anette Frank. 2024.
+\newblock \href {https://arxiv.org/abs/2311.07466} {On measuring faithfulness or self-consistency of natural language explanations}.
+\newblock \emph{Preprint}, arXiv:2311.07466.
+
+\bibitem[{Su et~al.(2025)Su, Healey, Nakov, and Cardie}]{su2025underthinkingoverthinkingempiricalstudy}
+Jinyan Su, Jennifer Healey, Preslav Nakov, and Claire Cardie. 2025.
+\newblock \href {https://arxiv.org/abs/2505.00127} {Between underthinking and overthinking: An empirical study of reasoning length and correctness in llms}.
+\newblock \emph{Preprint}, arXiv:2505.00127.
+
+\bibitem[{Tan(2023)}]{tan-2023-causal}
+Juanhe~(TJ) Tan. 2023.
+\newblock \href {https://doi.org/10.18653/v1/2023.blackboxnlp-1.12} {Causal abstraction for chain-of-thought reasoning in arithmetic word problems}.
+\newblock In \emph{Proceedings of the 6th BlackboxNLP Workshop: Analyzing and Interpreting Neural Networks for NLP}, pages 155--168, Singapore. Association for Computational Linguistics.
+
+\bibitem[{Turpin et~al.(2023)Turpin, Michael, Perez, and Bowman}]{NEURIPS2023_ed3fea90}
+Miles Turpin, Julian Michael, Ethan Perez, and Samuel Bowman. 2023.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2023/file/ed3fea9033a80fea1376299fa7863f4a-Paper-Conference.pdf} {Language models don\textquotesingle t always say what they think: Unfaithful explanations in chain-of-thought prompting}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~36, pages 74952--74965. Curran Associates, Inc.
+
+\bibitem[{Venhoff et~al.(2025)Venhoff, Arcuschin, Torr, Conmy, and Nanda}]{venhoff2025understanding}
+Constantin Venhoff, Iv{\'a}n Arcuschin, Philip Torr, Arthur Conmy, and Neel Nanda. 2025.
+\newblock \href {https://openreview.net/forum?id=OwhVWNOBcz} {Understanding reasoning in thinking language models via steering vectors}.
+\newblock In \emph{Workshop on Reasoning and Planning for Large Language Models}.
+
+\bibitem[{{Wang} et~al.(2022){Wang}, {Variengien}, {Conmy}, {Shlegeris}, and {Steinhardt}}]{2022arXiv221100593W}
+Kevin {Wang}, Alexandre {Variengien}, Arthur {Conmy}, Buck {Shlegeris}, and Jacob {Steinhardt}. 2022.
+\newblock \href {https://doi.org/10.48550/arXiv.2211.00593} {{Interpretability in the Wild: a Circuit for Indirect Object Identification in GPT-2 small}}.
+\newblock \emph{arXiv e-prints}, arXiv:2211.00593.
+
+\bibitem[{Wang et~al.(2024)Wang, Hu, Zhang, Tian, Liu, Chen, Shen, and Ye}]{wang2024how}
+Yiqun Wang, Sile Hu, Yonggang Zhang, Xiang Tian, Xuesong Liu, Yaowu Chen, Xu~Shen, and Jieping Ye. 2024.
+\newblock \href {https://openreview.net/forum?id=b2XfOm3RJa} {How large language models implement chain-of-thought?}
+
+\bibitem[{Wei et~al.(2022)Wei, Wang, Schuurmans, Bosma, ichter, Xia, Chi, Le, and Zhou}]{NEURIPS2022_9d560961}
+Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, brian ichter, Fei Xia, Ed~Chi, Quoc~V Le, and Denny Zhou. 2022.
+\newblock \href {https://proceedings.neurips.cc/paper_files/paper/2022/file/9d5609613524ecf4f15af0f7b31abca4-Paper-Conference.pdf} {Chain-of-thought prompting elicits reasoning in large language models}.
+\newblock In \emph{Advances in Neural Information Processing Systems}, volume~35, pages 24824--24837. Curran Associates, Inc.
+
+\bibitem[{Wu et~al.(2024)Wu, Wang, Xiao, Peng, and Fu}]{wu2024retrievalheadmechanisticallyexplains}
+Wenhao Wu, Yizhong Wang, Guangxuan Xiao, Hao Peng, and Yao Fu. 2024.
+\newblock \href {https://arxiv.org/abs/2404.15574} {Retrieval head mechanistically explains long-context factuality}.
+\newblock \emph{Preprint}, arXiv:2404.15574.
+
+\bibitem[{Xiao et~al.(2024)Xiao, Tian, Chen, Han, and Lewis}]{xiao2024efficient}
+Guangxuan Xiao, Yuandong Tian, Beidi Chen, Song Han, and Mike Lewis. 2024.
+\newblock \href {https://openreview.net/forum?id=NG7sS51zVF} {Efficient streaming language models with attention sinks}.
+\newblock In \emph{The Twelfth International Conference on Learning Representations}.
+
+\end{thebibliography}
