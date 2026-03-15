@@ -7,17 +7,14 @@ from app.infrastructure.repositories import (
     InMemoryEvaluationRepository,
     InMemoryReviewRepository
 )
-from app.infrastructure.external import ArxivClient, FileService
-from app.application.services.agent_service import AgentService
+from app.application.services.orchestration_service import OrchestrationService
 
 
 # Создаем singleton экземпляры
 _article_repository: ArticleRepository = InMemoryArticleRepository()
 _evaluation_repository: EvaluationRepository = InMemoryEvaluationRepository()
 _review_repository: ReviewRepository = InMemoryReviewRepository()
-_arxiv_client = ArxivClient()
-_file_service = FileService()
-_agent_service = AgentService()
+_orchestration_service = OrchestrationService()
 
 
 def get_article_repository() -> ArticleRepository:
@@ -35,17 +32,6 @@ def get_review_repository() -> ReviewRepository:
     return _review_repository
 
 
-def get_arxiv_client() -> ArxivClient:
-    """Получить клиент arXiv."""
-    return _arxiv_client
-
-
-def get_file_service() -> FileService:
-    """Получить сервис для работы с файлами."""
-    return _file_service
-
-
-def get_agent_service() -> AgentService:
-    """Получить сервис агентов."""
-    return _agent_service
-
+def get_orchestration_service() -> OrchestrationService:
+    """Получить orchestration service."""
+    return _orchestration_service

@@ -1,19 +1,29 @@
-"""Сервис для скачивания и парсинга файлов статей."""
+"""Сервис-адаптер над tools из agents_system."""
 import asyncio
-import io
-import tarfile
+import json
+import sys
 from pathlib import Path
 from typing import List, Optional
 
-import fitz
-import pymupdf4llm
-import requests
-
 from app.infrastructure.config.settings import settings
+from app.shared.exceptions.base import ServiceUnavailableError
+
+AGENTS_ROOT = Path(settings.PROJECT_ROOT) / "agents_system"
+if str(AGENTS_ROOT) not in sys.path:
+    sys.path.insert(0, str(AGENTS_ROOT))
+
+from agent_tools.tools import (  # type: ignore  # noqa: E402
+    download_arxiv_paper,
+    download_arxiv_tex,
+    list_tex_images,
+    parse_img_from_pdf,
+    parse_pdf_file,
+    parse_tex_file,
+)
 
 
 class FileService:
-    """Сервис для скачивания и работы с файлами статей."""
+    """Тонкий адаптер backend над file tools из agents_system."""
 
     def __init__(
         self,
@@ -21,110 +31,81 @@ class FileService:
         extracted_images_dir: str = settings.EXTRACTED_IMAGES_DIR,
     ) -> None:
         self.downloads_dir = Path(downloads_dir)
-        self.downloads_dir.mkdir(parents=True, exist_ok=True)
         self.extracted_images_dir = Path(extracted_images_dir)
-        self.extracted_images_dir.mkdir(parents=True, exist_ok=True)
 
     async def download_pdf(self, url: str, arxiv_id: str) -> Optional[str]:
-        """Скачать PDF файл статьи."""
-        file_path = self.downloads_dir / f"{arxiv_id}.pdf"
+        """Скачать PDF статьи через agents_system."""
 
-        def _download() -> str:
-            response = requests.get(url, timeout=60)
-            response.raise_for_status()
-            file_path.write_bytes(response.content)
-            return str(file_path.absolute())
+        def _download() -> Optional[str]:
+            raw = download_arxiv_paper.invoke({"arxiv_id": arxiv_id})
+            try:
+                payload = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                raise ServiceUnavailableError(f"download_arxiv_paper returned invalid JSON: {raw}") from exc
+            if payload.get("status") != "success":
+                raise ServiceUnavailableError(f"download_arxiv_paper failed for {arxiv_id}: {raw}")
+            return payload.get("path")
 
         return await asyncio.to_thread(_download)
 
     async def download_tex(self, url: str, arxiv_id: str) -> Optional[str]:
-        """Скачать и распаковать TeX-исходники статьи."""
-        target_dir = self.downloads_dir / f"{arxiv_id}_tex"
-        target_dir.mkdir(parents=True, exist_ok=True)
+        """Скачать TeX статьи через agents_system."""
 
         def _download() -> Optional[str]:
-            response = requests.get(url, timeout=60)
-            response.raise_for_status()
+            raw = download_arxiv_tex.invoke({"arxiv_id": arxiv_id})
             try:
-                with tarfile.open(fileobj=io.BytesIO(response.content), mode="r:*") as archive:
-                    archive.extractall(path=target_dir)
-            except tarfile.ReadError:
+                payload = json.loads(raw)
+            except json.JSONDecodeError:
+                if "does not have TeX sources" in raw or "Network error" in raw or "Unexpected error" in raw:
+                    return None
+                raise ServiceUnavailableError(f"download_arxiv_tex returned invalid JSON: {raw}")
+            if payload.get("status") != "success":
                 return None
-            return str(target_dir.absolute())
+            return payload.get("directory")
 
         return await asyncio.to_thread(_download)
 
     async def parse_tex(self, file_path: str) -> Optional[str]:
-        """Парсинг TeX файлов и извлечение текста."""
+        """Парсинг TeX через agents_system."""
+
         def _parse() -> Optional[str]:
-            path = Path(file_path)
-            tex_files = [path] if path.is_file() and path.suffix.lower() == ".tex" else list(path.glob("**/*.tex"))
-            if not tex_files:
+            raw = parse_tex_file.invoke({"tex_path": file_path})
+            if not raw or raw.startswith("Ошибка:"):
                 return None
-
-            main_tex = None
-            for tex_file in tex_files:
-                preview = tex_file.read_text(encoding="utf-8", errors="ignore")[:2000].lower()
-                if "\\documentclass" in preview or "\\begin{document}" in preview:
-                    main_tex = tex_file
-                    break
-
-            chunks: List[str] = []
-            for tex_file in ([main_tex] if main_tex else tex_files):
-                if tex_file is None:
-                    continue
-                content = tex_file.read_text(encoding="utf-8", errors="ignore")
-                if "\\begin{document}" in content:
-                    content = content[content.find("\\begin{document}"):]
-                chunks.append(f"\n\n%%% FILE: {tex_file.name} %%%\n{content}")
-
-            parsed = "\n".join(chunks).strip()
-            return parsed or None
+            return raw
 
         return await asyncio.to_thread(_parse)
 
     async def parse_pdf(self, file_path: str) -> Optional[str]:
-        """Парсинг PDF файла и извлечение текста."""
-        return await asyncio.to_thread(pymupdf4llm.to_markdown, file_path)
+        """Парсинг PDF через agents_system."""
+        return await asyncio.to_thread(parse_pdf_file.invoke, {"pdf_path": file_path})
 
     async def extract_images_from_pdf(self, file_path: str) -> List[str]:
-        """Извлечь изображения из PDF файла."""
-        def _extract() -> List[str]:
-            source = Path(file_path)
-            target_dir = self.extracted_images_dir / source.stem
-            target_dir.mkdir(parents=True, exist_ok=True)
+        """Извлечь изображения из PDF через agents_system."""
 
-            saved_images: List[str] = []
-            image_counter = 0
-            doc = fitz.open(str(source))
-            try:
-                for page_num in range(len(doc)):
-                    for image_info in doc[page_num].get_images(full=True):
-                        xref = image_info[0]
-                        try:
-                            pix = fitz.Pixmap(doc, xref)
-                            if pix.n - pix.alpha > 3:
-                                pix = fitz.Pixmap(fitz.csRGB, pix)
-                            image_counter += 1
-                            image_path = target_dir / f"{source.stem}_page{page_num + 1}_img{image_counter}.png"
-                            pix.save(str(image_path))
-                            saved_images.append(str(image_path.absolute()))
-                        except Exception:
-                            continue
-            finally:
-                doc.close()
-            return saved_images
+        def _extract() -> List[str]:
+            raw = parse_img_from_pdf.invoke({"path_to_pdf": file_path})
+            if raw.startswith("No images found"):
+                return []
+            if raw.startswith("An error occurred:") or raw.startswith("Error:"):
+                raise ServiceUnavailableError(raw)
+            return [line.strip() for line in raw.splitlines() if line.strip().startswith("/")]
 
         return await asyncio.to_thread(_extract)
 
     async def extract_images_from_tex(self, file_path: str) -> List[str]:
-        """Найти изображения в директории с TeX-исходниками."""
+        """Найти изображения в TeX-исходниках через agents_system."""
+
         def _extract() -> List[str]:
-            path = Path(file_path)
-            root = path if path.is_dir() else path.parent
-            images: List[str] = []
-            for ext in (".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".pdf"):
-                images.extend(str(candidate.absolute()) for candidate in root.glob(f"**/*{ext}"))
-            return images
+            raw = list_tex_images.invoke({"tex_path": file_path})
+            if "Изображения не найдены" in raw:
+                return []
+            if raw.startswith("Ошибка:"):
+                raise ServiceUnavailableError(raw)
+            return [
+                line.replace("Full:", "").strip()
+                for line in raw.splitlines()
+                if line.startswith("Full:")
+            ]
 
         return await asyncio.to_thread(_extract)

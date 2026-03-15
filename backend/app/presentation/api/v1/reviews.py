@@ -6,8 +6,7 @@ from app.application.dto.mappers import review_to_dto
 from app.presentation.dependencies import (
     get_article_repository,
     get_review_repository,
-    get_agent_service,
-    get_file_service
+    get_orchestration_service
 )
 from app.presentation.schemas import ReviewResponse, WriteReviewRequest
 from app.shared.exceptions.base import NotFoundError
@@ -20,22 +19,16 @@ async def write_review(
     request: WriteReviewRequest,
     article_repository=Depends(get_article_repository),
     review_repository=Depends(get_review_repository),
-    agent_service=Depends(get_agent_service),
-    file_service=Depends(get_file_service)
+    orchestration_service=Depends(get_orchestration_service)
 ):
     """
     Написать обзор статьи.
-    
-    ⚠️ ВНИМАНИЕ: Использует МОК AgentService.
-    Реальная реализация WriterAgent будет подключена другим разработчиком.
-    
+
     Args:
         request: Параметры обзора
         article_repository: Репозиторий статей
         review_repository: Репозиторий обзоров
-        agent_service: Сервис агентов (МОК)
-        file_service: Сервис для работы с файлами
-    
+
     Returns:
         Обзор статьи на русском языке
     """
@@ -50,8 +43,7 @@ async def write_review(
     use_case = WriteReviewUseCase(
         article_repository,
         review_repository,
-        agent_service,
-        file_service
+        orchestration_service
     )
     
     try:
@@ -113,4 +105,3 @@ async def get_review_by_article(
         verdict=dto.verdict,
         full_text=dto.full_text
     )
-

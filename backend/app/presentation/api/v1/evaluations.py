@@ -6,8 +6,7 @@ from app.application.dto.mappers import evaluation_to_dto
 from app.presentation.dependencies import (
     get_article_repository,
     get_evaluation_repository,
-    get_agent_service,
-    get_file_service
+    get_orchestration_service
 )
 from app.presentation.schemas import EvaluationResponse, EvaluateArticleRequest
 from app.shared.exceptions.base import NotFoundError
@@ -20,21 +19,15 @@ async def evaluate_article(
     request: EvaluateArticleRequest,
     article_repository=Depends(get_article_repository),
     evaluation_repository=Depends(get_evaluation_repository),
-    agent_service=Depends(get_agent_service),
-    file_service=Depends(get_file_service)
+    orchestration_service=Depends(get_orchestration_service)
 ):
     """
     Оценить статью.
-    
-    ⚠️ ВНИМАНИЕ: Использует МОК AgentService.
-    Реальная реализация EvalAgent будет подключена другим разработчиком.
-    
+
     Args:
         request: Параметры оценки
         article_repository: Репозиторий статей
         evaluation_repository: Репозиторий оценок
-        agent_service: Сервис агентов (МОК)
-        file_service: Сервис для работы с файлами
     
     Returns:
         Структурированная оценка статьи
@@ -50,8 +43,7 @@ async def evaluate_article(
     use_case = EvaluateArticleUseCase(
         article_repository,
         evaluation_repository,
-        agent_service,
-        file_service
+        orchestration_service
     )
     
     try:
@@ -117,4 +109,3 @@ async def get_evaluation_by_article(
         cons=dto.cons,
         justification=dto.justification
     )
-

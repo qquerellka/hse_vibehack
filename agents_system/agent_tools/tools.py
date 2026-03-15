@@ -154,7 +154,7 @@ def download_arxiv_tex(arxiv_id: str) -> str:
 
         source_url = f"https://arxiv.org/e-print/{arxiv_id}"
         
-        response = requests.get(source_url, stream=True, timeout=20)
+        response = requests.get(source_url, stream=True)
         response.raise_for_status()
         
         with tarfile.open(fileobj=io.BytesIO(response.content), mode="r:gz") as tar:

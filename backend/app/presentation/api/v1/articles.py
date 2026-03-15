@@ -7,11 +7,9 @@ from app.application.use_cases import (
     ParseArticleUseCase
 )
 from app.application.dto.mappers import article_to_dto
-from app.infrastructure.external import ArxivClient
 from app.presentation.dependencies import (
     get_article_repository,
-    get_arxiv_client,
-    get_file_service
+    get_orchestration_service
 )
 from app.presentation.schemas import (
     SearchArticlesRequest,
@@ -27,22 +25,18 @@ router = APIRouter(prefix="/articles", tags=["articles"])
 @router.post("/search", response_model=list[ArticleResponse])
 async def search_articles(
     request: SearchArticlesRequest,
-    arxiv_client: ArxivClient = Depends(get_arxiv_client)
+    orchestration_service=Depends(get_orchestration_service)
 ):
     """
     Поиск статей в arXiv.
-    
-    ⚠️ ВНИМАНИЕ: Использует МОК ArxivClient ⚠️
-    Реальная реализация поиска будет подключена другим разработчиком.
-    
+
     Args:
         request: Параметры поиска
-        arxiv_client: Клиент arXiv (МОК)
-    
+
     Returns:
-        Список найденных статей (тестовые данные)
+        Список найденных статей
     """
-    use_case = SearchArticlesUseCase(arxiv_client)
+    use_case = SearchArticlesUseCase(orchestration_service)
     results = await use_case.execute(request.query, request.max_results)
     
     return [
@@ -65,25 +59,19 @@ async def search_articles(
 async def download_article(
     request: DownloadArticleRequest,
     article_repository=Depends(get_article_repository),
-    arxiv_client=Depends(get_arxiv_client),
-    file_service=Depends(get_file_service)
+    orchestration_service=Depends(get_orchestration_service)
 ):
     """
     Скачать статью по arXiv ID.
-    
-    ⚠️ ВНИМАНИЕ: Использует МОКИ ArxivClient и FileService ⚠️
-    Реальная реализация будет подключена другим разработчиком.
-    
+
     Args:
         request: Параметры скачивания
         article_repository: Репозиторий статей
-        arxiv_client: Клиент arXiv (МОК)
-        file_service: Сервис для работы с файлами (МОК)
-    
+
     Returns:
-        Информация о скачанной статье (тестовые данные)
+        Информация о скачанной статье
     """
-    use_case = DownloadArticleUseCase(article_repository, arxiv_client, file_service)
+    use_case = DownloadArticleUseCase(article_repository, orchestration_service)
     
     try:
         article = await use_case.execute(request.arxiv_id)
@@ -111,21 +99,17 @@ async def download_article(
 async def parse_article(
     article_id: str,
     article_repository=Depends(get_article_repository),
-    file_service=Depends(get_file_service)
+    orchestration_service=Depends(get_orchestration_service)
 ):
     """
     Распарсить содержимое статьи.
-    
-    ⚠️ ВНИМАНИЕ: Использует МОК FileService ⚠️
-    Реальная реализация парсинга будет подключена другим разработчиком.
-    
+
     Args:
         article_id: UUID статьи
         article_repository: Репозиторий статей
-        file_service: Сервис для работы с файлами (МОК)
-    
+
     Returns:
-        Распарсенное содержимое (тестовые данные)
+        Распарсенное содержимое
     """
     try:
         article_uuid = UUID(article_id)
@@ -135,7 +119,7 @@ async def parse_article(
             detail="Invalid article ID format"
         )
     
-    use_case = ParseArticleUseCase(article_repository, file_service)
+    use_case = ParseArticleUseCase(article_repository, orchestration_service)
     
     try:
         parsed_content = await use_case.execute(article_uuid)
@@ -189,4 +173,3 @@ async def get_article(
         local_tex_path=dto.local_tex_path,
         parsed_content=dto.parsed_content
     )
-

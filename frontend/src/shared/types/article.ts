@@ -9,11 +9,14 @@ export type ArticleSummary = {
 }
 
 export type Evaluation = {
+  id: string
+  articleId: string
+  category: string
+  relevance: string
   novelty: number
   rigor: number
   impact: number
   overall: number
-  verdict: string
   pros: string[]
   cons: string[]
   reasoning: string
@@ -24,14 +27,21 @@ export type ReviewSection = {
   body: string
 }
 
-export type QuizQuestion = {
+export type Review = {
   id: string
-  question: string
-  options: string[]
-  answer: number
+  articleId: string
+  summary: string
+  methods: string
+  results: string
+  criticism: string
+  application: string
+  verdict: string
+  fullText: string
+  sections: ReviewSection[]
 }
 
 export type ArticleDetail = ArticleSummary & {
+  publishedDate?: string
   pdfUrl?: string
   texUrl?: string
   localPdfPath?: string
