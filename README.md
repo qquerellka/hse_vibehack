@@ -520,5 +520,5 @@ hse_vibehack/
 
 ## Демонстрация работы системы
 CLI - https://drive.google.com/file/d/15UfV33nzn90dD-_NxCi10xk7A5us9KF7/view?usp=drive_link
-# ЩАС ЕЩЕ ЗАЛЬЕМ ДЕМО С ФРОНТЕНДОМ
+Фронтенд - https://drive.google.com/drive/folders/1T3pY8CQugVzKjKJN6LicxbuxGhLUjd9B?usp=sharing
 
