@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 type SelectedArticleState = {
   selectedArticleId: string
@@ -7,9 +8,20 @@ type SelectedArticleState = {
   setSearchTerm: (value: string) => void
 }
 
-export const useSelectedArticle = create<SelectedArticleState>((set) => ({
-  selectedArticleId: '',
-  searchTerm: 'llm agents',
-  setSelectedArticleId: (selectedArticleId) => set({ selectedArticleId }),
-  setSearchTerm: (searchTerm) => set({ searchTerm }),
-}))
+export const useSelectedArticle = create<SelectedArticleState>()(
+  persist(
+    (set) => ({
+      selectedArticleId: '',
+      searchTerm: 'llm agents',
+      setSelectedArticleId: (selectedArticleId) => set({ selectedArticleId }),
+      setSearchTerm: (searchTerm) => set({ searchTerm }),
+    }),
+    {
+      name: 'science-helpy-page-state',
+      partialize: (state) => ({
+        selectedArticleId: state.selectedArticleId,
+        searchTerm: state.searchTerm,
+      }),
+    },
+  ),
+)

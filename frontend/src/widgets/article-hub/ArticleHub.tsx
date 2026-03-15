@@ -13,6 +13,7 @@ import {
   LoaderCircle,
   ScrollText,
   Sparkles,
+  Telescope,
 } from 'lucide-react'
 import {
   useArticleDetail,
@@ -54,12 +55,42 @@ export function ArticleHub() {
   if (!selectedArticleId) {
     return (
       <Card className="min-h-[640px]">
-        <div className="max-w-xl space-y-4">
-          <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Workspace</p>
-          <h2 className="text-3xl text-ink">Выберите статью из результатов поиска.</h2>
-          <p className="text-sm leading-7 text-muted">
-            После выбора frontend скачает карточку статьи через backend, покажет файлы, распарсенный текст, оценку и обзор.
-          </p>
+        <div className="space-y-8">
+          <div className="max-w-2xl space-y-4">
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Рабочая область</p>
+            <h2 className="text-3xl text-ink md:text-4xl">Выберите статью из результатов поиска.</h2>
+            <p className="text-base leading-8 text-muted">
+              После выбора здесь откроется вся рабочая зона: исходные материалы, текст статьи, оценка, краткая выжимка и полный обзор.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <WorkspaceTile
+              icon={<Telescope className="h-5 w-5" />}
+              title="1. Найдите публикацию"
+              description="Введите тему, название или ключевые слова, а затем выберите наиболее подходящую статью."
+            />
+            <WorkspaceTile
+              icon={<FileText className="h-5 w-5" />}
+              title="2. Откройте материалы"
+              description="Здесь появятся файлы статьи и текстовая версия, которую можно читать прямо в интерфейсе."
+            />
+            <WorkspaceTile
+              icon={<Sparkles className="h-5 w-5" />}
+              title="3. Запустите разбор"
+              description="Получите оценку, краткое резюме и полный обзор без перехода между разными экранами."
+            />
+          </div>
+
+          <div className="rounded-[28px] border border-line bg-fog/70 p-5">
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">Что будет доступно</p>
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
+              <PreviewChip label="Файлы статьи" value="PDF, TeX и основные сведения о публикации" />
+              <PreviewChip label="Текст для чтения" value="Подготовленная версия статьи прямо на странице" />
+              <PreviewChip label="Оценка" value="Новизна, строгость, влияние и краткий комментарий" />
+              <PreviewChip label="Обзор" value="Резюме, методы, результаты, критика и применение" />
+            </div>
+          </div>
         </div>
       </Card>
     )
@@ -68,14 +99,14 @@ export function ArticleHub() {
   if (articleQuery.isLoading || (articleQuery.isFetching && !article)) {
     return (
       <Card className="min-h-[640px] space-y-4">
-        <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Pipeline</p>
-        <h2 className="text-2xl text-ink">Скачиваю карточку статьи и файлы через backend.</h2>
-        <LoadingBlock title="Идёт скачивание" description="Backend запрашивает метаданные статьи, PDF и TeX, затем создаёт внутреннюю запись с UUID." />
+        <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Подготовка</p>
+        <h2 className="text-2xl text-ink">Подготавливаю материалы статьи.</h2>
+        <LoadingBlock title="Идёт загрузка" description="Собираю описание статьи и доступные файлы, чтобы можно было перейти к разбору." />
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <Step title="1. Download" description="скачивание статьи" state="active" />
-          <Step title="2. Parse" description="ожидает завершения download" state="idle" />
-          <Step title="3. Evaluate" description="ожидает завершения download" state="idle" />
-          <Step title="4. Review" description="ожидает завершения download" state="idle" />
+          <Step title="1. Загрузка" description="собираю материалы статьи" state="active" />
+          <Step title="2. Текст" description="ожидает подготовки материалов" state="idle" />
+          <Step title="3. Оценка" description="станет доступна после загрузки" state="idle" />
+          <Step title="4. Обзор" description="станет доступен после загрузки" state="idle" />
         </div>
       </Card>
     )
@@ -87,7 +118,7 @@ export function ArticleHub() {
         <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Ошибка</p>
         <h2 className="text-2xl text-ink">Не удалось загрузить карточку статьи.</h2>
         <p className="max-w-xl text-sm leading-7 text-muted">
-          Проверьте, что backend запущен, а orchestration layer может скачать статью по выбранному arXiv ID.
+          Попробуйте открыть статью ещё раз чуть позже.
         </p>
         <div className="rounded-[20px] border border-line bg-fog/80 p-4 font-mono text-xs text-muted">
           {getErrorMessage(articleQuery.error)}
@@ -98,23 +129,23 @@ export function ArticleHub() {
 
   const pipelineSteps = [
     {
-      title: '1. Download',
-      description: isDownloading ? 'backend скачивает PDF и TeX' : article.localPdfPath || article.localTexPath ? 'файлы получены' : 'ожидает загрузки',
+      title: '1. Загрузка',
+      description: isDownloading ? 'подготавливаю файлы статьи' : article.localPdfPath || article.localTexPath ? 'материалы готовы' : 'ожидает запуска',
       state: isDownloading ? 'active' : article.localPdfPath || article.localTexPath ? 'done' : 'idle',
     },
     {
-      title: '2. Parse',
-      description: isParsing || inferredParsing ? 'извлекается текст статьи' : article.parsedContent ? 'parsed_content получен' : 'парсинг ещё не запускался',
+      title: '2. Текст',
+      description: isParsing || inferredParsing ? 'извлекаю текст статьи' : article.parsedContent ? 'текст готов' : 'ещё не запускался',
       state: isParsing || inferredParsing ? 'active' : article.parsedContent ? 'done' : 'idle',
     },
     {
-      title: '3. Evaluate',
-      description: isEvaluating ? 'GraphMAS считает оценку' : evaluation ? 'оценка сохранена' : 'оценка ещё не запускалась',
+      title: '3. Оценка',
+      description: isEvaluating ? 'готовлю оценку статьи' : evaluation ? 'оценка готова' : 'ещё не запускалась',
       state: isEvaluating ? 'active' : evaluation ? 'done' : 'idle',
     },
     {
-      title: '4. Review',
-      description: isWritingReview ? 'генерируется обзор' : review ? 'обзор сохранён' : 'обзор ещё не запускался',
+      title: '4. Обзор',
+      description: isWritingReview ? 'пишу обзор статьи' : review ? 'обзор готов' : 'ещё не запускался',
       state: isWritingReview ? 'active' : review ? 'done' : 'idle',
     },
   ] as const
@@ -124,13 +155,12 @@ export function ArticleHub() {
       <div className="space-y-5 border-b border-line pb-6">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
-            <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Article dossier</p>
+            <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Статья</p>
             <h1 className="mt-3 text-4xl leading-tight text-ink md:text-5xl">{article.title}</h1>
             <p className="mt-4 max-w-3xl text-base leading-7 text-muted">{article.abstract}</p>
           </div>
           <div className="min-w-[320px] space-y-3 rounded-[24px] border border-line bg-fog/80 p-5">
             <Badge>{article.arxivId}</Badge>
-            <InfoRow label="UUID статьи" value={article.id} />
             <InfoRow label="Дата публикации" value={article.published} />
             <InfoRow label="Авторы" value={article.authors.join(', ')} />
             <div className="flex flex-wrap gap-2">
@@ -145,27 +175,57 @@ export function ArticleHub() {
           ))}
         </div>
 
-        <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" onClick={() => articleQuery.refetch()} disabled={isDownloading}>
-            {isDownloading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
-            Обновить статью
-          </Button>
-          <Button type="button" variant="outline" onClick={() => parseMutation.mutate()} disabled={isParsing || !articleBackendId}>
-            {isParsing ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
-            Извлечь текст
-          </Button>
-          <Button type="button" variant="outline" onClick={() => reviewMutation.mutate()} disabled={isWritingReview || !articleBackendId}>
-            {isWritingReview ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <ScrollText className="mr-2 h-4 w-4" />}
-            Краткая выжимка
-          </Button>
-          <Button type="button" onClick={() => evaluationMutation.mutate()} disabled={isEvaluating || !articleBackendId}>
-            {isEvaluating ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
-            Оценить статью
-          </Button>
-          <Button type="button" variant="outline" onClick={() => reviewMutation.mutate()} disabled={isWritingReview || !articleBackendId}>
-            {isWritingReview ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-            Написать обзор
-          </Button>
+        <div className="rounded-[26px] border border-line bg-fog/70 p-4">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">Действия</p>
+              <p className="mt-2 max-w-2xl text-sm leading-7 text-muted">
+                Начните с подготовки текста, затем выберите: нужна быстрая оценка статьи или развёрнутый обзор.
+              </p>
+            </div>
+            <Badge className="bg-white/82 text-ink">Текущая статья: {article.arxivId}</Badge>
+          </div>
+
+          <div className="mt-4 grid gap-3 lg:grid-cols-2 2xl:grid-cols-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => articleQuery.refetch()}
+              disabled={isDownloading}
+              className="w-full justify-center"
+            >
+              {isDownloading ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Download className="mr-2 h-4 w-4" />}
+              Обновить материалы
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => parseMutation.mutate()}
+              disabled={isParsing || !articleBackendId}
+              className="w-full justify-center"
+            >
+              {isParsing ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <FileText className="mr-2 h-4 w-4" />}
+              Извлечь текст
+            </Button>
+            <Button
+              type="button"
+              onClick={() => evaluationMutation.mutate()}
+              disabled={isEvaluating || !articleBackendId}
+              className="w-full justify-center bg-[#1e2a24] text-paper hover:bg-[#253229]"
+            >
+              {isEvaluating ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <BrainCircuit className="mr-2 h-4 w-4" />}
+              Получить оценку
+            </Button>
+            <Button
+              type="button"
+              onClick={() => reviewMutation.mutate()}
+              disabled={isWritingReview || !articleBackendId}
+              className="w-full justify-center bg-[#7a4a22] text-paper hover:bg-[#8b5528]"
+            >
+              {isWritingReview ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+              Собрать обзор
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -222,9 +282,9 @@ export function ArticleHub() {
             {article.parsedContent ? (
               <TextBlock value={article.parsedContent} />
             ) : isParsing || inferredParsing ? (
-              <LoadingBlock title="Извлекаю текст статьи" description="Backend парсит TeX или PDF и сохранит parsed_content в карточку статьи." />
+              <LoadingBlock title="Извлекаю текст статьи" description="Подготавливаю текстовую версию статьи для чтения и дальнейшего анализа." />
             ) : (
-              <p className="mt-4 text-sm leading-7 text-muted">parsed_content пока отсутствует. Запустите «Извлечь текст», оценку или обзор.</p>
+              <p className="mt-4 text-sm leading-7 text-muted">Текст статьи пока не подготовлен. Нажмите «Извлечь текст», чтобы открыть его здесь.</p>
             )}
           </Card>
 
@@ -251,26 +311,13 @@ export function ArticleHub() {
 
         <div className="space-y-5">
           <Card className="rounded-[24px] bg-ink p-5 text-paper shadow-none">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-paper/60">Текущий pipeline</p>
-            <h2 className="mt-3 text-2xl text-paper">Все ответы идут напрямую от backend.</h2>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-paper/60">Что можно сделать</p>
+            <h2 className="mt-3 text-2xl text-paper">Работайте со статьёй шаг за шагом.</h2>
             <div className="mt-4 space-y-3 text-sm text-paper/75">
-              <p>Поиск возвращает arXiv результаты.</p>
-              <p>Скачивание создаёт внутреннюю карточку статьи с UUID.</p>
-              <p>Парсинг обновляет `parsed_content`.</p>
-              <p>Оценка и обзор читаются из сохранённых backend-сущностей.</p>
-            </div>
-          </Card>
-
-          <Card className="rounded-[24px] bg-fog/80 p-5 shadow-none">
-            <div className="flex items-center gap-2">
-              <FolderSearch className="h-4 w-4 text-muted" />
-              <h2 className="text-xl text-ink">Технический статус</h2>
-            </div>
-            <div className="mt-4 space-y-3 text-sm text-muted">
-              <InfoRow label="selectedArticleId" value={selectedArticleId} />
-              <InfoRow label="download status" value={articleQuery.status} />
-              <InfoRow label="evaluation query" value={evaluationQuery.status} />
-              <InfoRow label="review query" value={reviewQuery.status} />
+              <p>Обновите материалы, если хотите заново подтянуть сведения и файлы по статье.</p>
+              <p>Извлеките текст, когда нужно читать статью прямо на странице, а не в отдельном PDF.</p>
+              <p>Получите оценку, если нужен быстрый ориентир по качеству и значимости работы.</p>
+              <p>Соберите обзор, если нужен полный связный разбор методов, результатов и ограничений.</p>
             </div>
           </Card>
 
@@ -280,10 +327,10 @@ export function ArticleHub() {
               <h2 className="text-xl text-ink">Действия с текущей статьёй</h2>
             </div>
             <div className="mt-4 space-y-3 text-sm text-muted">
-              <p>Если backend уже сохранил оценку или обзор, frontend поднимет их автоматически через `GET` endpoint.</p>
-              <p>Если данных ещё нет, можно отдельно запустить парсинг, оценку или написание обзора.</p>
+              <p>Если вы уже открывали эту статью раньше, готовые материалы появятся здесь автоматически.</p>
+              <p>Если данных пока нет, можно отдельно извлечь текст, получить оценку или собрать обзор.</p>
               <Button type="button" variant="ghost" className="px-0 text-left text-ink" onClick={() => setSelectedArticleId(article.arxivId)}>
-                Повторно открыть карточку по arXiv ID
+                Открыть эту статью заново
               </Button>
             </div>
           </Card>
@@ -331,10 +378,8 @@ function EvaluationPanel({
           </div>
 
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <ArtifactRow label="evaluation.id" value={evaluation.id} icon={<FileCode2 className="h-4 w-4" />} />
-            <ArtifactRow label="evaluation.article_id" value={evaluation.articleId} icon={<FileCode2 className="h-4 w-4" />} />
-            <ArtifactRow label="category" value={evaluation.category} icon={<BrainCircuit className="h-4 w-4" />} />
-            <ArtifactRow label="relevance" value={evaluation.relevance} icon={<Sparkles className="h-4 w-4" />} />
+            <ArtifactRow label="Категория" value={evaluation.category} icon={<BrainCircuit className="h-4 w-4" />} />
+            <ArtifactRow label="Актуальность" value={evaluation.relevance} icon={<Sparkles className="h-4 w-4" />} />
           </div>
 
           <div className="mt-4 grid gap-4 md:grid-cols-2">
@@ -343,14 +388,14 @@ function EvaluationPanel({
           </div>
 
           <div className="mt-4">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">justification</p>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">Комментарий</p>
             <p className="mt-2 text-sm leading-7 text-muted">{evaluation.reasoning}</p>
           </div>
         </>
       )}
 
       {!evaluation && (isLoading || isGenerating) && (
-        <LoadingBlock title="Получаю оценку статьи" description="Frontend ждёт, пока backend вернёт или сгенерирует `EvaluationResponse`." />
+        <LoadingBlock title="Готовлю оценку статьи" description="Собираю основные выводы, сильные стороны и возможные ограничения работы." />
       )}
 
       {!evaluation && !isLoading && !isGenerating && !errorMessage && (
@@ -383,8 +428,8 @@ function ReviewPanel({
       {review && (
         <>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <ArtifactRow label="review.id" value={review.id} icon={<FileCode2 className="h-4 w-4" />} />
-            <ArtifactRow label="review.article_id" value={review.articleId} icon={<FileCode2 className="h-4 w-4" />} />
+            <ArtifactRow label="Разделов" value={String(review.sections.length)} icon={<FileCode2 className="h-4 w-4" />} />
+            <ArtifactRow label="Краткий итог" value={review.verdict} icon={<BookOpen className="h-4 w-4" />} />
           </div>
 
           <div className="prose-copy mt-4 space-y-4 text-sm leading-7 text-ink">
@@ -397,14 +442,14 @@ function ReviewPanel({
           </div>
 
           <div className="mt-4">
-            <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">full_text</p>
+            <p className="font-mono text-xs uppercase tracking-[0.22em] text-muted">Полный текст обзора</p>
             <TextBlock value={review.fullText} />
           </div>
         </>
       )}
 
       {!review && (isLoading || isGenerating) && (
-        <LoadingBlock title="Получаю обзор статьи" description="Frontend ждёт, пока backend вернёт или сгенерирует `ReviewResponse`." />
+        <LoadingBlock title="Готовлю обзор статьи" description="Собираю ключевые идеи, методы, результаты и ограничения в одном тексте." />
       )}
 
       {!review && !isLoading && !isGenerating && !errorMessage && (
@@ -435,19 +480,19 @@ function SummaryPanel({
       {review ? (
         <div className="mt-4 space-y-4">
           <div className="rounded-[20px] border border-line bg-white/70 p-4">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">summary</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Кратко</p>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-ink">{review.summary}</p>
           </div>
           <div className="rounded-[20px] border border-line bg-white/70 p-4">
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">verdict</p>
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">Итог</p>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-ink">{review.verdict}</p>
           </div>
         </div>
       ) : isGenerating ? (
-        <LoadingBlock title="Генерирую краткую выжимку" description="Backend пишет обзор статьи, после чего здесь появится секция `summary` и итоговый `verdict`." />
+        <LoadingBlock title="Готовлю краткую выжимку" description="Собираю несколько главных выводов и короткий итог по статье." />
       ) : (
         <div className="mt-4 rounded-[20px] border border-line bg-white/70 p-4 text-sm leading-7 text-muted">
-          Краткая выжимка берётся из `summary` обзора. Нажмите кнопку `Краткая выжимка`, чтобы backend сгенерировал обзор и заполнил этот блок.
+          Здесь появится короткое резюме статьи. Нажмите «Собрать обзор», чтобы заполнить этот блок.
         </div>
       )}
 
@@ -490,6 +535,35 @@ function Step({
           estimateLabel="Обычно занимает около 2 минут."
         />
       )}
+    </div>
+  )
+}
+
+function WorkspaceTile({
+  icon,
+  title,
+  description,
+}: {
+  icon: ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <div className="rounded-[24px] border border-line bg-white/72 p-5 shadow-none">
+      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-fog text-ink">
+        {icon}
+      </div>
+      <h3 className="mt-4 text-lg text-ink">{title}</h3>
+      <p className="mt-2 text-sm leading-7 text-muted">{description}</p>
+    </div>
+  )
+}
+
+function PreviewChip({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-[20px] border border-line bg-white/78 p-4">
+      <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">{label}</p>
+      <p className="mt-2 text-sm leading-6 text-ink">{value}</p>
     </div>
   )
 }

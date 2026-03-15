@@ -21,7 +21,7 @@ export function ArticleSearch() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <p className="font-mono text-xs uppercase tracking-[0.28em] text-muted">Поиск статей</p>
-          <h2 className="mt-2 text-2xl text-ink">arXiv через agents_system</h2>
+          <h2 className="mt-2 text-2xl text-ink">Найдите статью по теме</h2>
         </div>
         <Badge>{isSearching ? 'Идёт поиск' : `Найдено: ${articles.length}`}</Badge>
       </div>
@@ -51,12 +51,12 @@ export function ArticleSearch() {
       <div className="space-y-3">
         {!isSearchStarted && (
           <p className="text-sm leading-7 text-muted">
-            Введите запрос и запустите поиск. На экране будут показаны все результаты, которые вернёт backend.
+            Введите тему, ключевые слова или название, чтобы подобрать подходящие статьи.
           </p>
         )}
         {isSearching && (
           <div className="rounded-[22px] border border-line bg-fog/70 p-4 text-sm text-muted">
-            <p>Ищу статьи в arXiv через backend.</p>
+            <p>Подбираю статьи по вашему запросу.</p>
             <ProgressStatus active estimateLabel="Поиск обычно занимает около 2 минут." />
           </div>
         )}
@@ -67,7 +67,7 @@ export function ArticleSearch() {
         )}
         {isSearchStarted && !isSearching && !isError && articles.length === 0 && (
           <div className="rounded-[22px] border border-line bg-fog/70 p-4 text-sm text-muted">
-            Backend не вернул результатов по запросу `{searchTerm}`.
+            По запросу `{searchTerm}` ничего не нашлось. Попробуйте изменить формулировку.
           </div>
         )}
         {articles.map((article) => (
