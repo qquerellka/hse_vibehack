@@ -1,4 +1,4 @@
-# VaiBot — AI-ассистент для анализа научных статей
+# MAS for ArXiv — AI-ассистент для анализа научных статей
 
 Мультиагентный AI-ассистент для поиска, анализа, оценки и рецензирования научных статей из arXiv. Проект создан в рамках хакатона **VibeHack 2026** для **HSE (Высшая школа экономики)**.
 
@@ -84,10 +84,10 @@ npm run dev
 | Участник | Роль | Контакты |
 |----------|------|----------|
 | **Бужор Роман** | Backend Developer | [GitHub](https://github.com/Ggh13) |
-| **Крутояров Вячеслав** | Backend Developer | [GitHub](https://github.com/KrutoyarovSL) |
+| **Крутояров Вячеслав** | AI/ML Engineer | [GitHub](https://github.com/KrutoyarovSL) |
 | **Усков Максим** | Frontend Developer | [GitHub](https://github.com/qquerellka) |
-| **Мишин Илья** | AI/ML Engineer | [GitHub](https://github.com/Ippolid) |
-| **Шубин Вадим** | Fullstack Developer | [GitHub](https://github.com/ghgqwer) |
+| **Мишин Илья** |   Backend Developer| [GitHub](https://github.com/Ippolid) |
+| **Шубин Вадим** | AI/ML Engineer | [GitHub](https://github.com/ghgqwer) |
 
 ## Архитектура и структура проекта
 
@@ -117,7 +117,6 @@ hse_vibehack/
 └── docker-compose.yml                # Оркестрация сервисов
 ```
 
-![Архитектура](https://via.placeholder.com/800x400/1a1a2e/e0e0e0?text=Architecture+Diagram)
 
 **Поток данных:**
 1. Пользователь вводит запрос → Frontend → `/api/v1/articles/search`
@@ -127,9 +126,7 @@ hse_vibehack/
 
 ## Демонстрация работы
 
-![Скриншот 1](https://via.placeholder.com/600x400/1a1a2e/e0e0e0?text=Screenshot+1+Search)
-![Скриншот 2](https://via.placeholder.com/600x400/1a1a2e/e0e0e0?text=Screenshot+2+Evaluation)
-![Скриншот 3](https://via.placeholder.com/600x400/1a1a2e/e0e0e0?text=Screenshot+3+Review)
+
 
 *Скриншоты будут добавлены после деплоя.*
 
